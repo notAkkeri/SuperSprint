@@ -1,12 +1,11 @@
 import pygame
 import sys
 from button import Button 
+from misc import get_font
+SCREEN_HEIGHT = 720
 
 def displayCredits(SCREEN):
     credits_screen = True 
-
-    def get_font(size):
-        return pygame.font.Font("assets/font1.ttf", size)
 
     while credits_screen:
         SCREEN.fill((0, 0, 0))

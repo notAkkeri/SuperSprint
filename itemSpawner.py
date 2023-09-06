@@ -12,12 +12,12 @@ class Coin:
     def draw(self, SCREEN):
         SCREEN.blit(self.coin_type, (self.x, self.y))
 
-#Coin spawner  & rarity 
+#Coin spawner & rarity 
 def spawn_coins(coins, width, height, goldCoin, silverCoin, bronzeCoin):
     coin_probabilities = {
-        "gold": 0.1, # 10% 
-        "silver": 0.25, # 25% 
-        "bronze": 0.50 # 50%
+        "gold": 0.05, # 5% 
+        "silver": 0.15, # 15% 
+        "bronze": 0.80 # 80%
     }
 
     if random.random() < coin_probabilities["gold"]:
@@ -32,7 +32,7 @@ def coinTime(coins, last_coin_spawn_time, SCREEN, get_gold_icon, get_silver_icon
     current_time = pygame.time.get_ticks()
     time_elapsed = current_time - last_coin_spawn_time
 
-    if time_elapsed >= 50000: 
+    if time_elapsed >= 90000: 
         spawn_coins(coins, SCREEN.get_width(), SCREEN.get_height(), get_gold_icon(), get_silver_icon(), get_bronze_icon())
         last_coin_spawn_time = current_time
 
@@ -51,4 +51,7 @@ def despawn_coins(coins, screen_width, screen_height):
     # Remove coins that past their spawn counter (later, when character picks them up)
     for coin in coins_to_remove:
         coins.remove(coin)
+
+
+
 
