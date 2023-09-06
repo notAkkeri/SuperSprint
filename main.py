@@ -2,7 +2,7 @@ import pygame
 import sys
 from button import Button 
 from credits import displayCredits  # imports credits 
-#from gameEngine import displayGame # imports game 
+from gameEngine import displayGame # imports game 
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
@@ -12,6 +12,7 @@ pygame.display.set_caption("Menu")
 
 def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)
+
 # The main menu
 def mainMenu():
     while True:
@@ -50,8 +51,9 @@ def mainMenu():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                #if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                 #   displayGameEngine(SCREEN)
+                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    displayGame(SCREEN)
+                    pygame.display.set_caption("Menu")
                 if EXIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
@@ -63,3 +65,4 @@ def mainMenu():
         pygame.display.update()
 
 mainMenu()
+
