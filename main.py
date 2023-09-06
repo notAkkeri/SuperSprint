@@ -53,6 +53,7 @@ def mainMenu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     displayGame(SCREEN)
+                    
                     pygame.display.set_caption("Menu")
                 if EXIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
