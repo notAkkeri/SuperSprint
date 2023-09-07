@@ -3,6 +3,7 @@ import sys
 from button import Button 
 from credits import displayCredits  # imports credits 
 from gameEngine import displayGame # imports game 
+from itemSpawner import coin_values # coin value
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))

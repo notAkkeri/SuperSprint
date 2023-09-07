@@ -5,17 +5,9 @@ import pygame
 def get_heart_icon():
     return pygame.image.load("assets/heartIcon.png")
 
-def get_gold_icon():
-    return pygame.image.load("assets/goldCoin.png")
-
-def get_silver_icon():
-    return pygame.image.load("assets/silverCoin.png")
-
-def get_bronze_icon():
-    return pygame.image.load("assets/bronzeCoin.png")
-
 def get_font(size):
     return pygame.font.Font("assets/font1.ttf", size)
+
 
 def backgroundScroll(bg_image, bg_x, screen):
     bg_x -= 1 
@@ -62,5 +54,6 @@ class Hero(pygame.sprite.Sprite):
 
     def collect_coin(self):
         self.coins_collected += 1
+
 
 
