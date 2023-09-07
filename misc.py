@@ -46,14 +46,13 @@ class Hero(pygame.sprite.Sprite):
             self.rect.y = SCREEN_HEIGHT - self.rect.height
             self.is_jumping = False
             self.velocity_y = 0
-
+            
     def jump(self):
         if not self.is_jumping:
             self.velocity_y = JUMP_STRENGTH
             self.is_jumping = True
 
-    def collect_coin(self):
-        self.coins_collected += 1
-
+    def collect_coin(self, value):
+        self.coins_collected += value
 
 
