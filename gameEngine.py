@@ -24,11 +24,13 @@ def displayGame(SCREEN):
     gameBG = pygame.image.load("assets/gameBG.png")
     bg_x = 0  # Initial x-position of the background
     
-    #coin & hero instance
+    #Instances
     hero = Hero(SCREEN_HEIGHT)
-    coin_spawner = CoinSpawner(SCREEN.get_width(), SCREEN.get_height(), hero)  
+    coin_spawner = CoinSpawner(SCREEN.get_width(), SCREEN.get_height(), hero)
+    boulder_spawner = BoulderSpawner(SCREEN.get_width(), SCREEN.get_height())
+  
     
-    # main loop 
+    # game loop 
     while game_screen:
         SCREEN.fill((0, 0, 0))
         pygame.display.set_caption("Super Sprint")
@@ -46,6 +48,16 @@ def displayGame(SCREEN):
         coin_spawner.spawn_coins()
         coin_spawner.update_coins()
         hero.update()
+
+        # Boulder
+        boulder_spawner.spawn_boulders()
+        boulder_spawner.update()
+
+        #collisions
+        for boulder in boulder_spawner.boulders:
+            boulder.check_collision(hero)
+            if boulder.collided:
+                boulder_spawner.boulders.remove(boulder)
 
         # display score 
         score = coin_spawner.score
@@ -68,6 +80,21 @@ def displayGame(SCREEN):
                 if hero.rect.colliderect(coin_rect):
                     coin["collected"] = True
                     score += coin["value"]
+
+       
+        # Boulder object (spawning)
+        for boulder in boulder_spawner.boulders:
+            SCREEN.blit(boulder.image, boulder.rect)
+
+        if hero.health == 0:
+            print("you have died")
+
+        # event handler 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit() 
+
     
         # event handler 
         for event in pygame.event.get():

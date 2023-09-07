@@ -16,6 +16,8 @@ def get_font3(size):
 # Icons
 def get_heart_icon():
     return pygame.image.load("assets/heartIcon.png")
+def get_boulder_icon():
+    return pygame.image.load("assets/boulder.png")
 
 # Moving background
 def backgroundScroll(bg_image, bg_x, screen):
@@ -31,7 +33,6 @@ def drawScore(SCREEN, score):
     score_text = get_font1(35).render(f"Score: {score}", True, (0, 0, 0))
     score_rect = score_text.get_rect(center=(SCREEN.get_width() // 2, 20))
     SCREEN.blit(score_text, score_rect)
-
 
 # CHARACTER # 
 
@@ -51,6 +52,13 @@ class Hero(pygame.sprite.Sprite):
         self.is_jumping = False
         self.coins_collected = 0
         self.radius = self.rect.width // 2
+        self.health = 3
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.health = 0
+
 
     def update(self):
         # gravity
@@ -72,5 +80,8 @@ class Hero(pygame.sprite.Sprite):
    # increases number of coins collected by char then updates 
     def collect_coin(self, value):
         self.coins_collected += value
+
+
+
 
 

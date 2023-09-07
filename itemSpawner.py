@@ -1,6 +1,6 @@
 import random
 import pygame
-#from misc import Hero
+from misc import Hero
 
 # Point value for coins 
 coin_values = {
@@ -18,6 +18,8 @@ coinImages = {
     "silver": pygame.image.load("assets/silverCoin.png"),
     "bronze": pygame.image.load("assets/bronzeCoin.png")
 }
+
+# ITEMS #
 
 # Coin spawning logic 
 class CoinSpawner:
@@ -63,7 +65,7 @@ class CoinSpawner:
         coins_to_remove = []
 
         for coin in self.coins:
-            coin["x"] -= 3  # Adjust coin movement speed
+            coin["x"] -= 2.5  # coin movement speed
             if coin["x"] + coin["image"].get_width() < 0 or coin["collected"]:
                 coins_to_remove.append(coin)
             else:
@@ -75,3 +77,50 @@ class CoinSpawner:
                     
         for coin in coins_to_remove:
             self.coins.remove(coin)
+
+# Boulders #
+
+class Boulder(pygame.sprite.Sprite):
+    def __init__(self, screen_width, screen_height):
+        super().__init__()
+        self.image = pygame.image.load("assets/boulder.png")
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (screen_width, screen_height - self.rect.height)
+        self.speed = 7 # movement speed of boulder
+        self.collided = False
+
+    def update(self):
+        self.rect.x -= self.speed
+
+    def check_collision(self, hero):
+       if not self.collided and self.rect.colliderect(hero.rect):
+            self.collided = True
+
+class BoulderSpawner(pygame.sprite.Sprite):
+    def __init__(self, screen_width, screen_height):
+        super().__init__()
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.boulders = []
+        self.last_spawn_time = pygame.time.get_ticks()
+        self.spawn_interval = 10000  # spawn cooldown
+
+    def spawn_boulders(self):
+        current_time = pygame.time.get_ticks()
+        time_elapsed = current_time - self.last_spawn_time
+
+        if time_elapsed >= self.spawn_interval:
+            boulder = Boulder(self.screen_width, self.screen_height)
+            self.boulders.append(boulder)
+            self.last_spawn_time = current_time
+
+    def update(self):
+        for boulder in self.boulders:
+            boulder.update()
+        self.boulders = [boulder for boulder in self.boulders if boulder.rect.right > -100]
+
+    def draw(self, SCREEN):
+        for boulder in self.boulders:
+            SCREEN.blit(boulder.image, boulder.rect)
+
+
