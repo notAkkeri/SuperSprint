@@ -4,22 +4,57 @@ from misc import Hero
 
 # Point value for coins 
 coin_values = {
-    "gold": 15,
-    "silver": 5,
-    "bronze": 1
+    "gold": 55,
+    "silver": 10,
+    "bronze": 5
 }
 
 # Collection range 
 COLLISION_MARGIN = 10
 
 # Load images
-coinImages = {
-    "gold": pygame.image.load("assets/goldCoin.png"),
-    "silver": pygame.image.load("assets/silverCoin.png"),
-    "bronze": pygame.image.load("assets/bronzeCoin.png")
-}
+def load_images():
+    coin_images = {
+        "gold": pygame.image.load("assets/goldCoin.png"),
+        "silver": pygame.image.load("assets/silverCoin.png"),
+        "bronze": pygame.image.load("assets/bronzeCoin.png"),
+    }
+    boulder_image = pygame.image.load("assets/boulder.png")
+    return coin_images, boulder_image
+
+coinImages, boulderImage = load_images()
 
 # ITEMS #
+
+class Coin(pygame.sprite.Sprite):
+    def __init__(self, x, y, coin_type, value):
+        super().__init__()
+        self.image = coinImages[coin_type]
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.collected = False
+        self.value = value
+
+class CoinPool:
+    def __init__(self, screen_width, screen_height):
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.coins = []
+        self.available_coins = []
+
+    def create_coin(self, x, y, coin_type, value):
+        if len(self.available_coins) > 0:
+            coin = self.available_coins.pop()
+            coin.rect.topleft = (x, y)
+            coin.collected = False
+            coin.value = value
+        else:
+            coin = Coin(x, y, coin_type, value)
+            self.coins.append(coin)
+        return coin
+
+    def despawn_coin(self, coin):
+        self.available_coins.append(coin)
 
 # Coin spawning logic 
 class CoinSpawner:
@@ -32,6 +67,7 @@ class CoinSpawner:
         self.last_spawn_time = pygame.time.get_ticks()  # Initialize with current time
         self.hero = hero
         self.score = 0 
+        self.coin_pool = CoinPool(screen_width, screen_height)
 
     def spawn_coins(self):
         coin_probabilities = {
@@ -42,22 +78,14 @@ class CoinSpawner:
         current_time = pygame.time.get_ticks()  # Get the current time in milliseconds
         time_elapsed = current_time - self.last_spawn_time
 
-        if time_elapsed >= 500:  # Spawn coins every 1000 milliseconds (1 second)
+        if time_elapsed >= 850:  # Spawn coins every 850 milliseconds
             for coin_type, probability in coin_probabilities.items():
                 if random.random() < probability:
-                    coin_image = self.coin_images.get(coin_type)  
-                    if coin_image:
-                        coin_x = self.screen_width
-                        coin_y = random.randint(100, self.screen_height - coin_image.get_height())
-                        coin = {
-                            "x": coin_x,
-                            "y": coin_y,
-                            "type": coin_type,
-                            "image": coin_image,
-                            "value": coin_values.get(coin_type, 0),
-                            "collected": False
-                        }
-                        self.coins.append(coin)
+                    coin_x = self.screen_width
+                    coin_y = random.randint(100, self.screen_height - coinImages[coin_type].get_height())
+                    coin_value = coin_values.get(coin_type, 0)
+                    coin = self.coin_pool.create_coin(coin_x, coin_y, coin_type, coin_value)
+                    self.coins.append(coin)
             self.last_spawn_time = current_time
 
 # Update coins (spawning)
@@ -65,15 +93,21 @@ class CoinSpawner:
         coins_to_remove = []
 
         for coin in self.coins:
-            coin["x"] -= 2.5  # coin movement speed
-            if coin["x"] + coin["image"].get_width() < 0 or coin["collected"]:
+            coin.rect.x -= 3  # coin movement speed
+            if coin.rect.x + coin.rect.width < 0 or coin.collected:
                 coins_to_remove.append(coin)
+                self.coin_pool.despawn_coin(coin)
             else:
-                coin_rect = pygame.Rect(coin["x"] - COLLISION_MARGIN, coin["y"] - COLLISION_MARGIN, coin["image"].get_width() + 2 * COLLISION_MARGIN, coin["image"].get_height() + 2 * COLLISION_MARGIN)
-                if not coin["collected"] and self.hero.rect.colliderect(coin_rect):
-                    coin["collected"] = True
-                    self.score += coin["value"]
-                    print(f"Collected {coin['type']} coin, It's worth {coin['value']} points!")
+                coin_rect = pygame.Rect(
+                    coin.rect.x - COLLISION_MARGIN, 
+                    coin.rect.y - COLLISION_MARGIN, 
+                    coin.rect.width + 2 * COLLISION_MARGIN, 
+                    coin.rect.height + 2 * COLLISION_MARGIN
+                )
+                if not coin.collected and self.hero.rect.colliderect(coin_rect):
+                    coin.collected = True
+                    self.score += coin.value
+                    print(f"Collected {coin.image} coin, It's worth {coin.value} points!")
                     
         for coin in coins_to_remove: 
             self.coins.remove(coin)
@@ -83,10 +117,10 @@ class CoinSpawner:
 class Boulder(pygame.sprite.Sprite):
     def __init__(self, screen_width, screen_height):
         super().__init__()
-        self.image = pygame.image.load("assets/boulder.png")
+        self.image = boulderImage
         self.rect = self.image.get_rect()
         self.rect.topleft = (screen_width, screen_height - self.rect.height)
-        self.speed = 4  # movement speed of boulder
+        self.speed = 5  # movement speed of boulder
         self.collided = False
 
     def update(self):
@@ -106,7 +140,7 @@ class BoulderSpawner(pygame.sprite.Sprite):
         self.screen_height = screen_height
         self.boulders = []
         self.last_spawn_time = pygame.time.get_ticks()
-        self.spawn_interval = 1000  # spawn cooldown
+        self.spawn_interval = 5500  # spawn cooldown (1000 = 1 second)
 
     def spawn_boulders(self):
         current_time = pygame.time.get_ticks()

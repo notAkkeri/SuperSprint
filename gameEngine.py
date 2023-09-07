@@ -37,8 +37,8 @@ def displayGame(SCREEN):
         pygame.display.set_caption("Super Sprint")
 
         # Frame rate
-        clock.tick(240)
-        
+        clock.tick(4500)
+
         # background 
         backgroundScroll(gameBG, bg_x, SCREEN)
         bg_x = backgroundScroll(gameBG, bg_x, SCREEN)
@@ -84,16 +84,19 @@ def displayGame(SCREEN):
 
         # Draw coins & collection handler 
         for coin in coin_spawner.coins:
-            SCREEN.blit(coin["image"], (coin["x"], coin["y"]))
-            if not coin["collected"]:
-                coin_rect = pygame.Rect(coin["x"], coin["y"], coin["image"].get_width(), coin["image"].get_height())
-                if hero.rect.colliderect(coin_rect):
-                    coin["collected"] = True
-                    score += coin["value"]
-                
-                # Display score
-                score = coin_spawner.score
-                drawScore(SCREEN, score)
+            SCREEN.blit(coin.image, (coin.rect.x, coin.rect.y))
+
+            coin_rect = pygame.Rect(coin.rect.x, coin.rect.y, coin.image.get_width(), coin.image.get_height())
+            if not coin.collected:
+                if coin_rect.colliderect(hero.rect):
+                    coin.collected = True
+                    coin_spawner.score += coin.value
+                    print(f"Collected {coin.image} coin, It's worth {coin.value} points!")
+
+    
+            # Display score
+        score = coin_spawner.score
+        drawScore(SCREEN, score)
 
         # Check if the game is over
         if len(hearts) == 0:
