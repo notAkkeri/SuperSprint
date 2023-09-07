@@ -59,7 +59,6 @@ class Hero(pygame.sprite.Sprite):
         if self.health <= 0:
             self.health = 0
 
-
     def update(self):
         # gravity
         self.velocity_y += GRAVITY

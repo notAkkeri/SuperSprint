@@ -2,6 +2,7 @@ import pygame
 import sys
 from misc import *
 from itemSpawner import *
+clock = pygame.time.Clock()
 
 pygame.init()
 
@@ -19,6 +20,7 @@ def displayGame(SCREEN):
     # healthy (lives)
     heart_icon = pygame.transform.scale(get_heart_icon(), (45, 45))     
     lives = 3
+    hearts = [heart_icon] * lives
 
     # background 
     gameBG = pygame.image.load("assets/gameBG.png")
@@ -29,20 +31,23 @@ def displayGame(SCREEN):
     coin_spawner = CoinSpawner(SCREEN.get_width(), SCREEN.get_height(), hero)
     boulder_spawner = BoulderSpawner(SCREEN.get_width(), SCREEN.get_height())
   
-    
     # game loop 
     while game_screen:
         SCREEN.fill((0, 0, 0))
         pygame.display.set_caption("Super Sprint")
 
+        # Frame rate
+        clock.tick(240)
+        
         # background 
         backgroundScroll(gameBG, bg_x, SCREEN)
         bg_x = backgroundScroll(gameBG, bg_x, SCREEN)
 
-        # Hearts display 
-        for i in range(lives):
-            x = SCREEN.get_width() - 50 - (i * (heart_icon.get_width() + 5))  
-            SCREEN.blit(heart_icon, (x, 10))  
+        # heart display
+        for i in range(hero.health):
+            x = SCREEN.get_width() - 50 - (i * (heart_icon.get_width() + 5))
+            SCREEN.blit(heart_icon, (x, 10))
+
 
         # Update the CoinSpawner
         coin_spawner.spawn_coins()
@@ -52,12 +57,17 @@ def displayGame(SCREEN):
         # Boulder
         boulder_spawner.spawn_boulders()
         boulder_spawner.update()
-
-        #collisions
         for boulder in boulder_spawner.boulders:
-            boulder.check_collision(hero)
-            if boulder.collided:
+            SCREEN.blit(boulder.image, boulder.rect)
+
+        # boulder collision
+        for i, boulder in enumerate(boulder_spawner.boulders):
+            if not boulder.collided and boulder.rect.colliderect(hero.rect):
+                boulder.collided = True
                 boulder_spawner.boulders.remove(boulder)
+                if hero.health > 0:  
+                    hero.health -= 1  
+                    hearts.pop()
 
         # display score 
         score = coin_spawner.score
@@ -80,27 +90,22 @@ def displayGame(SCREEN):
                 if hero.rect.colliderect(coin_rect):
                     coin["collected"] = True
                     score += coin["value"]
+                
+                # Display score
+                score = coin_spawner.score
+                drawScore(SCREEN, score)
 
-       
-        # Boulder object (spawning)
-        for boulder in boulder_spawner.boulders:
-            SCREEN.blit(boulder.image, boulder.rect)
-
-        if hero.health == 0:
-            print("you have died")
+        # Check if the game is over
+        if len(hearts) == 0:
+            print("Game Over")
+            # GAME OVER SCREN GOES HERE <---
+            game_screen = False
 
         # event handler 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit() 
-
-    
-        # event handler 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit() 
-            
+                
         pygame.display.update()
 

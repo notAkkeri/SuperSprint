@@ -75,7 +75,7 @@ class CoinSpawner:
                     self.score += coin["value"]
                     print(f"Collected {coin['type']} coin, It's worth {coin['value']} points!")
                     
-        for coin in coins_to_remove:
+        for coin in coins_to_remove: 
             self.coins.remove(coin)
 
 # Boulders #
@@ -86,15 +86,18 @@ class Boulder(pygame.sprite.Sprite):
         self.image = pygame.image.load("assets/boulder.png")
         self.rect = self.image.get_rect()
         self.rect.topleft = (screen_width, screen_height - self.rect.height)
-        self.speed = 7 # movement speed of boulder
+        self.speed = 4  # movement speed of boulder
         self.collided = False
 
     def update(self):
         self.rect.x -= self.speed
 
-    def check_collision(self, hero):
-       if not self.collided and self.rect.colliderect(hero.rect):
+    def check_collision(self, hero, hearts):
+        if not self.collided and self.rect.colliderect(hero.rect):
             self.collided = True
+            if hero.health > 0:  # Check if hero has health left
+                hero.health -= 1  # Decrement hero's health
+                hearts.pop()  # Remove one heart icon from the list
 
 class BoulderSpawner(pygame.sprite.Sprite):
     def __init__(self, screen_width, screen_height):
@@ -103,7 +106,7 @@ class BoulderSpawner(pygame.sprite.Sprite):
         self.screen_height = screen_height
         self.boulders = []
         self.last_spawn_time = pygame.time.get_ticks()
-        self.spawn_interval = 10000  # spawn cooldown
+        self.spawn_interval = 1000  # spawn cooldown
 
     def spawn_boulders(self):
         current_time = pygame.time.get_ticks()
