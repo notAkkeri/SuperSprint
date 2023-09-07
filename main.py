@@ -3,12 +3,12 @@ import sys
 from button import Button 
 from credits import displayCredits  # imports credits 
 from gameEngine import displayGame # imports game 
-from itemSpawner import coin_values # coin value
+from itemSpawner import coin_values # coin
+from misc import get_font, title
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
 BG = pygame.image.load("assets/background.png")
-title = pygame.image.load("assets/logo.png")
 pygame.display.set_caption("Menu")
 
 def get_font(size):
@@ -46,7 +46,6 @@ def mainMenu():
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
 
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -62,8 +61,7 @@ def mainMenu():
                 if credits_button.checkForInput(MENU_MOUSE_POS) and pygame.mouse.get_pressed()[0]:
                     displayCredits(SCREEN) 
                     pygame.display.set_caption("Menu")
-
-
+                
         pygame.display.update()
 
 mainMenu()

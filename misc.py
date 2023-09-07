@@ -1,14 +1,23 @@
 import pygame
 
 # MISC # 
+# game logo
+title = pygame.image.load("assets/logo.png")
 
-def get_heart_icon():
-    return pygame.image.load("assets/heartIcon.png")
-
+# Fonts 
 def get_font(size):
+    return pygame.font.Font("assets/font.ttf", size)
+def get_font1(size):
+    return pygame.font.Font("assets/font1.ttf", size)
+def get_font3(size):
     return pygame.font.Font("assets/font1.ttf", size)
 
 
+# Icons
+def get_heart_icon():
+    return pygame.image.load("assets/heartIcon.png")
+
+# Moving background
 def backgroundScroll(bg_image, bg_x, screen):
     bg_x -= 1 
     if bg_x < -bg_image.get_width():
@@ -17,15 +26,21 @@ def backgroundScroll(bg_image, bg_x, screen):
     screen.blit(bg_image, (bg_x + bg_image.get_width(), 0))
     return bg_x 
 
+# Score on screen
 def drawScore(SCREEN, score):
-    score_text = get_font(24).render(f"Score: {score}", True, (255, 255, 255))
+    score_text = get_font1(35).render(f"Score: {score}", True, (0, 0, 0))
     score_rect = score_text.get_rect(center=(SCREEN.get_width() // 2, 20))
     SCREEN.blit(score_text, score_rect)
 
+
 # CHARACTER # 
+
+#Goobal variables 
 SCREEN_HEIGHT = 720
 JUMP_STRENGTH = -11
 GRAVITY = 0.1
+
+# hero class
 class Hero(pygame.sprite.Sprite):
     def __init__(self, screen_height):
         super().__init__()
@@ -35,23 +50,26 @@ class Hero(pygame.sprite.Sprite):
         self.velocity_y = 0
         self.is_jumping = False
         self.coins_collected = 0
+        self.radius = self.rect.width // 2
 
     def update(self):
-        # Apply gravity
+        # gravity
         self.velocity_y += GRAVITY
         self.rect.y += self.velocity_y
 
-        # Keep the character on the ground
+        # Keep the character on the ground 
         if self.rect.y >= SCREEN_HEIGHT - self.rect.height:
             self.rect.y = SCREEN_HEIGHT - self.rect.height
             self.is_jumping = False
             self.velocity_y = 0
-            
+
+    # jump function 
     def jump(self):
         if not self.is_jumping:
             self.velocity_y = JUMP_STRENGTH
             self.is_jumping = True
 
+   # increases number of coins collected by char then updates 
     def collect_coin(self, value):
         self.coins_collected += value
 

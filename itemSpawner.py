@@ -1,13 +1,16 @@
 import random
 import pygame
-from misc import Hero
+#from misc import Hero
 
-# Settings #
+# Point value for coins 
 coin_values = {
     "gold": 15,
     "silver": 5,
     "bronze": 1
 }
+
+# Collection range 
+COLLISION_MARGIN = 10
 
 # Load images
 coinImages = {
@@ -16,6 +19,7 @@ coinImages = {
     "bronze": pygame.image.load("assets/bronzeCoin.png")
 }
 
+# Coin spawning logic 
 class CoinSpawner:
     def __init__(self, screen_width, screen_height, hero):
         self.screen_width = screen_width
@@ -54,6 +58,7 @@ class CoinSpawner:
                         self.coins.append(coin)
             self.last_spawn_time = current_time
 
+# Update coins (spawning)
     def update_coins(self):
         coins_to_remove = []
 
@@ -61,9 +66,12 @@ class CoinSpawner:
             coin["x"] -= 3  # Adjust coin movement speed
             if coin["x"] + coin["image"].get_width() < 0 or coin["collected"]:
                 coins_to_remove.append(coin)
-            elif coin["x"] < self.hero.rect.x + self.hero.rect.width and coin["x"] + coin["image"].get_width() > self.hero.rect.x:
-                if coin["y"] < self.hero.rect.y + self.hero.rect.height and coin["y"] + coin["image"].get_height() > self.hero.rect.y:
+            else:
+                coin_rect = pygame.Rect(coin["x"] - COLLISION_MARGIN, coin["y"] - COLLISION_MARGIN, coin["image"].get_width() + 2 * COLLISION_MARGIN, coin["image"].get_height() + 2 * COLLISION_MARGIN)
+                if not coin["collected"] and self.hero.rect.colliderect(coin_rect):
                     coin["collected"] = True
-                    self.hero.collect_coin(coin["value"])
+                    self.score += coin["value"]
+                    print(f"Collected {coin['type']} coin, It's worth {coin['value']} points!")
+                    
         for coin in coins_to_remove:
             self.coins.remove(coin)

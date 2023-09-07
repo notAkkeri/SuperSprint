@@ -1,6 +1,5 @@
 import pygame
 import sys
-import random
 from misc import *
 from itemSpawner import *
 
@@ -25,7 +24,7 @@ def displayGame(SCREEN):
     gameBG = pygame.image.load("assets/gameBG.png")
     bg_x = 0  # Initial x-position of the background
     
-    # coin spawn instance
+    #coin & hero instance
     hero = Hero(SCREEN_HEIGHT)
     coin_spawner = CoinSpawner(SCREEN.get_width(), SCREEN.get_height(), hero)  
     
@@ -43,44 +42,38 @@ def displayGame(SCREEN):
             x = SCREEN.get_width() - 50 - (i * (heart_icon.get_width() + 5))  
             SCREEN.blit(heart_icon, (x, 10))  
 
-        
         # Update the CoinSpawner
         coin_spawner.spawn_coins()
         coin_spawner.update_coins()
         hero.update()
 
-
         # display score 
-        score = hero.coins_collected 
+        score = coin_spawner.score
         drawScore(SCREEN, score)
 
         # MOVEMENT #
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
-            print("jump success")  # Add this line to check if the spacebar is detected
+            #print("jump success")  
             hero.jump()
 
         # Draw the hero character
         SCREEN.blit(hero.image, hero.rect)
 
-
-        # Draw coins
+        # Draw coins & collection handler 
         for coin in coin_spawner.coins:
             SCREEN.blit(coin["image"], (coin["x"], coin["y"]))
-
-        for coin in coin_spawner.coins:
-            if coin["collected"]:
-                continue
-            if hero.rect.colliderect(pygame.Rect(coin["x"], coin["y"], coin["image"].get_width(), coin["image"].get_height())):
-                coin["collected"] = True
-                score += coin["value"]  
-        
-
+            if not coin["collected"]:
+                coin_rect = pygame.Rect(coin["x"], coin["y"], coin["image"].get_width(), coin["image"].get_height())
+                if hero.rect.colliderect(coin_rect):
+                    coin["collected"] = True
+                    score += coin["value"]
+    
+        # event handler 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
+                sys.exit() 
             
-
         pygame.display.update()
 

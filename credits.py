@@ -1,7 +1,7 @@
 import pygame
 import sys
 from button import Button 
-from misc import get_font
+from misc import get_font1
 SCREEN_HEIGHT = 720
 
 def displayCredits(SCREEN):
@@ -20,23 +20,23 @@ def displayCredits(SCREEN):
         SCREEN.blit(background_image, (0, 0))
 
         # Display credits information
-        programmers_text = get_font(45).render("Programmers:", True, "#0c0c0c")
-        programmer1_text = get_font(30).render("notAkkeri", True, "#fbfdb7")
-        programmer2_text = get_font(30).render("daScuderiaSha", True, "#fbfdb7")
+        programmers_text = get_font1(45).render("Programmers:", True, "#0c0c0c")
+        programmer1_text = get_font1(30).render("notAkkeri", True, "#fbfdb7")
+        programmer2_text = get_font1(30).render("daScuderiaSha", True, "#fbfdb7")
 
-        music_text = get_font(45).render("Music:", True, "#0c0c0c")
-        music1_text = get_font(30).render("N/A", True, "#fbfdb7")
-        music2_text = get_font(30).render("N/A", True, "#fbfdb7")
+        music_text = get_font1(45).render("Music:", True, "#0c0c0c")
+        music1_text = get_font1(30).render("N/A", True, "#fbfdb7")
+        music2_text = get_font1(30).render("N/A", True, "#fbfdb7")
 
-        assets_text = get_font(45).render("Assets:", True, "#0c0c0c")
-        assets1_text = get_font(30).render("N/A", True, "#fbfdb7")
-        assets2_text = get_font(30).render("N/A", True, "#fbfdb7")
+        assets_text = get_font1(45).render("Assets:", True, "#0c0c0c")
+        assets1_text = get_font1(30).render("N/A", True, "#fbfdb7")
+        assets2_text = get_font1(30).render("N/A", True, "#fbfdb7")
 
-        open_source_text = get_font(35).render("Open Source project!", True, "#0c0c0c")
-        use_text = get_font(30).render("Feel free to use (just leave credit)", True, "#fbfdb7")
+        open_source_text = get_font1(35).render("Open Source project!", True, "#0c0c0c")
+        use_text = get_font1(30).render("Feel free to use (just leave credit)", True, "#fbfdb7")
 
         back_button = Button(image=pygame.image.load("assets/rect1.png"), pos=(80, 640),
-                             text_input="BACK", font=get_font(30), base_color="#fbfdb7", hovering_color="#f8cd78")
+                             text_input="BACK", font=get_font1(30), base_color="#fbfdb7", hovering_color="#f8cd78")
 
         # Display the text on the credits screen
         SCREEN.blit(programmers_text, (440, 20))
