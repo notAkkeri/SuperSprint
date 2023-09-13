@@ -2,6 +2,7 @@ import pygame
 import sys
 from misc import *
 from itemSpawner import *
+from endScreen import *
 clock = pygame.time.Clock()
 
 pygame.init()
@@ -47,7 +48,6 @@ def displayGame(SCREEN):
         for i in range(hero.health):
             x = SCREEN.get_width() - 50 - (i * (heart_icon.get_width() + 5))
             SCREEN.blit(heart_icon, (x, 10))
-
 
         # Update the CoinSpawner
         coin_spawner.spawn_coins()
@@ -101,7 +101,7 @@ def displayGame(SCREEN):
         # Check if the game is over
         if len(hearts) == 0:
             print("Game Over")
-            # GAME OVER SCREN GOES HERE <---
+            # displayEnd(SCREEN)
             game_screen = False
 
         # event handler 

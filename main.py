@@ -1,23 +1,24 @@
 import pygame
 import sys
 from button import Button 
-from credits import displayCredits  # imports credits 
-from gameEngine import displayGame # imports game 
-from itemSpawner import coin_values # coin
-from misc import get_font, title
+from credits import displayCredits  
+from gameEngine import displayGame 
+from misc import get_font, title, click_sound, menu_sound
+
 pygame.init()
+pygame.mixer.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
 BG = pygame.image.load("assets/background.png")
 pygame.display.set_caption("Menu")
-
-
 
 # The main menu
 def mainMenu():
     while True:
         SCREEN.blit(BG, (0, 0))
         MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+        # Menu theme
 
         # Title (Super Sprint)
         title_height = title.get_height()
@@ -29,19 +30,23 @@ def mainMenu():
     
         # buttons
         PLAY_BUTTON = Button(image=pygame.image.load("assets/rect.png"), pos=(640, 300),
-                             text_input="PLAY", font=get_font(75), base_color="#fbfdb7", hovering_color="#f8cd78")
-        EXIT_BUTTON = Button(image=pygame.image.load("assets/rect.png"), pos=(640, 450),
-                             text_input="QUIT", font=get_font(75), base_color="#fbfdb7", hovering_color="#f8cd78")
-
-        credits_button = Button(image=pygame.image.load("assets/rect1.png"), pos=(1180, 640),
-                                text_input="CREDITS", font=get_font(30), base_color="#fbfdb7", hovering_color="#f8cd78")
-    
-        # changes colour if hover & updates
-        credits_button.changeColor(MENU_MOUSE_POS)
-        credits_button.update(SCREEN)
+                             text_input="PLAY", font=get_font(75), base_color="#fbfdb7", hovering_color="#f8cd78",
+                            click_sound=click_sound)
+        
+        HELP_BUTTON = Button(image=pygame.image.load("assets/rect.png"), pos=(640, 425),
+                             text_input="HELP", font=get_font(75), base_color="#fbfdb7", hovering_color="#f8cd78",
+                             click_sound=click_sound)
+                             
+        EXIT_BUTTON = Button(image=pygame.image.load("assets/rect.png"), pos=(640, 550),
+                             text_input="QUIT", font=get_font(75), base_color="#fbfdb7", hovering_color="#f8cd78",
+                             click_sound=click_sound)
+        
+        CREDITS_BUTTON= Button(image=pygame.image.load("assets/rect1.png"), pos=(1180, 640),
+                                text_input="CREDITS", font=get_font(30), base_color="#fbfdb7", hovering_color="#f8cd78",
+                                click_sound=click_sound)
 
         # loops the buttons, changes the colour (based on which is hovered) & updates the display 
-        for button in [PLAY_BUTTON, EXIT_BUTTON]:
+        for button in [PLAY_BUTTON, EXIT_BUTTON, CREDITS_BUTTON, HELP_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
 
@@ -51,13 +56,17 @@ def mainMenu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    displayGame(SCREEN)
-                            
+                    click_sound.play()
+                    displayGame(SCREEN)          
                     pygame.display.set_caption("Menu")
+                if HELP_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    #displayHelp(SCREEN)
+                    pygame.display.set_caption("Help")
                 if EXIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
-                if credits_button.checkForInput(MENU_MOUSE_POS) and pygame.mouse.get_pressed()[0]:
+                if CREDITS_BUTTON.checkForInput(MENU_MOUSE_POS) and pygame.mouse.get_pressed()[0]:
+                    click_sound.play()
                     displayCredits(SCREEN) 
                     pygame.display.set_caption("Menu")
                 

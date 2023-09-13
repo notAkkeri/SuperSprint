@@ -1,67 +1,59 @@
 import pygame
 import sys
-from button import Button 
-from misc import get_font1
+from button import Button
+from misc import get_font1, click_sound
+
 SCREEN_HEIGHT = 720
 
 def displayCredits(SCREEN):
-    credits_screen = True 
+    credits_screen = True
 
     while credits_screen:
-        SCREEN.fill((0, 0, 0))
-        pygame.display.set_caption("Credits")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-        # displays background image 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if back_button.checkForInput(pygame.mouse.get_pos()):
+                    click_sound.play()
+                    credits_screen = False
+                    break  # Back to menu if button press
+
+        SCREEN.fill((0, 0, 0))
+        pygame.display.set_caption("Credits")
+
+        # displays background image
         background_image = pygame.image.load("assets/background.png")
         SCREEN.blit(background_image, (0, 0))
 
-        # Display credits information
-        programmers_text = get_font1(45).render("Programmers:", True, "#0c0c0c")
-        programmer1_text = get_font1(30).render("notAkkeri", True, "#fbfdb7")
-        programmer2_text = get_font1(30).render("daScuderiaSha", True, "#fbfdb7")
+        # Text dict
+        categories = [
+            ("Programmers:", ["notAkkeri", "daScuderiaSha"]),
+            ("SFX:", ["Button", "Menu Theme ~ Yasunori Nishiki", "Game Theme ~ notAkkeri"]),
+            ("Assets:", ["N/A", "N/A"]),
+            ("Open Source project!", ["Feel free to use, all relevant credit is shown here."])
+        ]
 
-        music_text = get_font1(45).render("Music:", True, "#0c0c0c")
-        music1_text = get_font1(30).render("N/A", True, "#fbfdb7")
-        music2_text = get_font1(30).render("N/A", True, "#fbfdb7")
+        y_position = 20  
 
-        assets_text = get_font1(45).render("Assets:", True, "#0c0c0c")
-        assets1_text = get_font1(30).render("N/A", True, "#fbfdb7")
-        assets2_text = get_font1(30).render("N/A", True, "#fbfdb7")
+        for category, subheadings in categories:
+            # headings
+            heading_text = get_font1(45).render(category, True, "#0c0c0c")
+            SCREEN.blit(heading_text, (440, y_position))
+            y_position += 50 
 
-        open_source_text = get_font1(35).render("Open Source project!", True, "#0c0c0c")
-        use_text = get_font1(30).render("Feel free to use (just leave credit)", True, "#fbfdb7")
+            # subheadings
+            for subheading in subheadings:
+                subheading_text = get_font1(30).render(subheading, True, "#fbfdb7")
+                SCREEN.blit(subheading_text, (440, y_position))
+                y_position += 35  
 
         back_button = Button(image=pygame.image.load("assets/rect1.png"), pos=(80, 640),
-                             text_input="BACK", font=get_font1(30), base_color="#fbfdb7", hovering_color="#f8cd78")
-
-        # Display the text on the credits screen
-        SCREEN.blit(programmers_text, (440, 20))
-        SCREEN.blit(programmer1_text, (440, 60))
-        SCREEN.blit(programmer2_text, (440, 90))
-
-        SCREEN.blit(music_text, (440, 160))
-        SCREEN.blit(music1_text, (440, 200))
-        SCREEN.blit(music2_text, (440, 230))
-
-        SCREEN.blit(assets_text, (440, 300))
-        SCREEN.blit(assets1_text, (440, 340))
-        SCREEN.blit(assets2_text, (440, 370))
-
-        SCREEN.blit(open_source_text, (440, 450))
-        SCREEN.blit(use_text, (440, 480))
+                            text_input="BACK", font=get_font1(30), base_color="#fbfdb7", hovering_color="#f8cd78",
+                            click_sound=click_sound)
 
         back_button.changeColor(pygame.mouse.get_pos())
         back_button.update(SCREEN)
 
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if back_button.checkForInput(pygame.mouse.get_pos()):
-                    credits_screen = False
-                    exit  
-
         pygame.display.update()
-

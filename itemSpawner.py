@@ -107,8 +107,7 @@ class CoinSpawner:
                 if not coin.collected and self.hero.rect.colliderect(coin_rect):
                     coin.collected = True
                     self.score += coin.value
-                    print(f"Collected {coin.image} coin, It's worth {coin.value} points!")
-                    
+                    # print(f"Collected {coin.image} coin, It's worth {coin.value} points!")
         for coin in coins_to_remove: 
             self.coins.remove(coin)
 
@@ -132,6 +131,7 @@ class Boulder(pygame.sprite.Sprite):
             if hero.health > 0:  # Check if hero has health left
                 hero.health -= 1  # Decrement hero's health
                 hearts.pop()  # Remove one heart icon from the list
+            print(f"Hero has been hit!")
 
 class BoulderSpawner(pygame.sprite.Sprite):
     def __init__(self, screen_width, screen_height):

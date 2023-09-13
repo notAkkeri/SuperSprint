@@ -1,6 +1,21 @@
 import pygame
+pygame.init()
+pygame.mixer.init()
+
+# SFX & Audio # 
+
+# Button/sound  
+sound_path = "assets/sfx/click1.mp3"
+click_sound = pygame.mixer.Sound(sound_path)
+click_sound.set_volume(0.45)
+
+# Menu Theme
+menu_path = "assets/sfx/bgSound.wav"
+menu_sound = pygame.mixer.Sound(menu_path)
+
 
 # MISC # 
+
 # game logo
 title = pygame.image.load("assets/logo.png")
 
@@ -79,6 +94,7 @@ class Hero(pygame.sprite.Sprite):
    # increases number of coins collected by char then updates 
     def collect_coin(self, value):
         self.coins_collected += value
+
 
 
 
