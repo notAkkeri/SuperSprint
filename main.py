@@ -1,9 +1,12 @@
 import pygame
+from pygame.locals import *
+from pygame import mixer 
 import sys
 from button import Button 
 from credits import displayCredits  
 from gameEngine import displayGame 
-from misc import get_font, title, click_sound, menu_sound
+from help import displayHelp
+from misc import get_font, title, click_sound, menu_Theme
 
 pygame.init()
 pygame.mixer.init()
@@ -12,13 +15,16 @@ SCREEN = pygame.display.set_mode((1280, 720))
 BG = pygame.image.load("assets/background.png")
 pygame.display.set_caption("Menu")
 
+# menu theme
+menu_Theme_music = menu_Theme()
+
 # The main menu
 def mainMenu():
+    # Playing menu theme
+    menu_Theme_music.play(-1)
     while True:
         SCREEN.blit(BG, (0, 0))
         MENU_MOUSE_POS = pygame.mouse.get_pos()
-
-        # Menu theme
 
         # Title (Super Sprint)
         title_height = title.get_height()
@@ -57,11 +63,13 @@ def mainMenu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     click_sound.play()
-                    displayGame(SCREEN)          
+                    menu_Theme_music.stop()
+                    displayGame(SCREEN)        
                     pygame.display.set_caption("Menu")
                 if HELP_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    #displayHelp(SCREEN)
-                    pygame.display.set_caption("Help")
+                    click_sound.play()
+                    displayHelp(SCREEN)
+                    pygame.display.set_caption("Menu")
                 if EXIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()

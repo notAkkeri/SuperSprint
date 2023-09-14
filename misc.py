@@ -1,4 +1,6 @@
 import pygame
+from pygame.locals import *
+from pygame import mixer 
 pygame.init()
 pygame.mixer.init()
 
@@ -10,8 +12,13 @@ click_sound = pygame.mixer.Sound(sound_path)
 click_sound.set_volume(0.45)
 
 # Menu Theme
-menu_path = "assets/sfx/bgSound.wav"
-menu_sound = pygame.mixer.Sound(menu_path)
+def menu_Theme():
+    mixer.init()
+    mixer.music.load("assets/sfx/menu.mp3")
+    mixer.music.play()
+    pygame.mixer.music.set_volume(0.3)
+    return mixer.music
+
 
 
 # MISC # 

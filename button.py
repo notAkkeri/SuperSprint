@@ -36,4 +36,4 @@ class Button():
 
 	def handle_click(self):
 		click_sound.play()
-
+	
