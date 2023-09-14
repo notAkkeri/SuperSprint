@@ -10,6 +10,11 @@ pygame.init()
 #global variables 
 SCREEN_HEIGHT = 720
 
+# Themes
+
+# game_Theme_Music =  game_theme()
+menu_Theme_music = menu_Theme()
+
 # Function to display the game screen
 def displayGame(SCREEN):
     print("entering game")
@@ -102,6 +107,7 @@ def displayGame(SCREEN):
         if len(hearts) == 0:
             print("Game Over")
             # displayEnd(SCREEN)
+            menu_Theme_music.play()
             game_screen = False
 
         # event handler 
