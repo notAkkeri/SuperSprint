@@ -161,3 +161,4 @@ class BoulderSpawner(pygame.sprite.Sprite):
             SCREEN.blit(boulder.image, boulder.rect)
 
 
+

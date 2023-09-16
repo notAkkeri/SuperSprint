@@ -19,6 +19,8 @@ def menu_Theme():
     pygame.mixer.music.set_volume(0.3)
     return mixer.music
 
+def stop_menu_music(self):
+    self.menu_Theme_music.stop()
 
 
 # MISC # 
@@ -31,8 +33,10 @@ def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)
 def get_font1(size):
     return pygame.font.Font("assets/font1.ttf", size)
+def get_font2(size):
+    return pygame.font.Font("assets/font2.ttf", size)
 def get_font3(size):
-    return pygame.font.Font("assets/font1.ttf", size)
+    return pygame.font.Font("assets/font3.ttf", size)
 
 
 # Icons
@@ -55,6 +59,12 @@ def drawScore(SCREEN, score):
     score_text = get_font1(35).render(f"Score: {score}", True, (0, 0, 0))
     score_rect = score_text.get_rect(center=(SCREEN.get_width() // 2, 20))
     SCREEN.blit(score_text, score_rect)
+
+def drawOver(SCREEN, x, y):
+    over_text = get_font3(205).render("GAME OVER!!!", True, (132, 183, 15))
+    over_rect = over_text.get_rect(topleft=(x, y))
+    SCREEN.blit(over_text, over_rect)
+
 
 # CHARACTER # 
 
