@@ -28,6 +28,9 @@ def stop_menu_music(self):
 # game logo
 title = pygame.image.load("assets/logo.png")
 
+# gameOver background 
+endBG = pygame.image.load("assets/backgroundx.png")
+
 # Fonts 
 def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)

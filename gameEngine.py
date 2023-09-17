@@ -22,7 +22,7 @@ class GameEngine:
         self.game_state_manager.set_state(self.game_state_manager.displayEnd, self.SCREEN, self.game_state_manager)
         
     def run(self):
-        print("entering game")
+        #print("entering game")
         self.menu_Theme_music.stop()
         # scores 
         score = 0
@@ -99,17 +99,19 @@ class GameEngine:
                     if coin_rect.colliderect(hero.rect):
                         coin.collected = True
                         coin_spawner.score += coin.value
-                        print(f"Collected {coin.image} coin, It's worth {coin.value} points!")
+                        #print(f"Collected {coin.image} coin, It's worth {coin.value} points!")
             # Display score
             score = coin_spawner.score
             drawScore(self.SCREEN, score)
             
   
-            if len(hearts) == 2:
-                print("Game Over")
+            if len(hearts) == 0:
+                #print("Game Over")
                 self.menu_Theme_music.play()
-                self.game_screen = False
-                self.transition_to_end_screen()
+                self.game_state_manager.set_state("end", self.SCREEN, self.game_state_manager)
+                return
+
+
 
             # event handler 
             for event in pygame.event.get():

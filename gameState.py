@@ -31,7 +31,6 @@ def start_main_menu(self, SCREEN, game_state_manager):
     main_menu = MainMenu(SCREEN, game_state_manager)
     main_menu.run()
 
-
 # start game 
 def startGameEngine(SCREEN, next_state_callback=None):
     game_engine = GameEngine(SCREEN, next_state_callback)
@@ -50,5 +49,6 @@ def displayHelp(SCREEN, next_state_callback=None):
 def displayEnd(SCREEN, game_state_manager):
     end_screen = EndScreen(SCREEN, game_state_manager)
     end_screen.run()
+   
 
 
