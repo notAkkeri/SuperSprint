@@ -43,6 +43,9 @@ def get_font2(size):
     return pygame.font.Font("assets/font2.ttf", size)
 def get_font3(size):
     return pygame.font.Font("assets/font3.ttf", size)
+def get_font4(size):
+    return pygame.font.Font("assets/font4.ttf", size)
+
 
 
 # Icons
@@ -60,9 +63,11 @@ def backgroundScroll(bg_image, bg_x, screen):
     screen.blit(bg_image, (bg_x + bg_image.get_width(), 0))
     return bg_x 
 
+# ON SCREEN TEXT #
+
 # score on screen (gameEngine)
 def drawScore(SCREEN, score):
-    score_text = get_font1(35).render(f"Score: {score}", True, (0, 0, 0))
+    score_text = get_font4(35).render(f"Score: {score}", True, (0, 0, 0))
     score_rect = score_text.get_rect(center=(SCREEN.get_width() // 2, 20))
     SCREEN.blit(score_text, score_rect)
 
@@ -72,24 +77,30 @@ def drawOver(SCREEN, x, y):
     over_rect = over_text.get_rect(topleft=(x, y))
     SCREEN.blit(over_text, over_rect)
 
-# draw Hscore (End)
+# highscore txt
 def drawHighscoreText(screen, text, x, y):
-    font = get_font(35)
-    text_surface = font.render(text, True, (255, 255, 255))
+    font = get_font4(45)
+    text_surface = font.render(text, True, (240,230,140))
     text_rect = text_surface.get_rect()
     text_rect.center = (x, y)
     screen.blit(text_surface, text_rect)
 
-# draw score
+# current score txt
 def drawScore2(screen, score, x, y):
-    font = get_font(35)
+    font = get_font4(35)
     score_text = f"Your Score: {score}"
-    text_surface = font.render(score_text, True, (255, 255, 255))
+    text_surface = font.render(score_text, True, (250,250,210))
     text_rect = text_surface.get_rect()
     text_rect.topleft = (x, y)
     screen.blit(text_surface, text_rect)
 
-
+# new HS txt 
+def drawNewHS(screen, text, x, y):
+    font = get_font4(45)
+    text_surface = font.render(text, True, (240,230,140))
+    text_rect = text_surface.get_rect()
+    text_rect.center = (x, y)
+    screen.blit(text_surface, text_rect)
 
 
 

@@ -5,9 +5,9 @@ pygame.init()
 
 # Global constants
 SCREEN_HEIGHT = 720
-JUMP_STRENGTH = -13
+JUMP_STRENGTH = -12.25
 GRAVITY = 0.135
-JUMP_COOLDOWN_DURATION = 1250
+JUMP_COOLDOWN_DURATION = 850
 
 # Load sprite sheets
 spriteHurt = pygame.image.load("assets/spriteHurt.png")

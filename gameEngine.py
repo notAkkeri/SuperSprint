@@ -110,6 +110,10 @@ class GameEngine:
             # display score 
             score = self.coin_spawner.score  
             drawScore(self.SCREEN, score)
+
+            # update current scores
+            with open("Scores/currentScore.txt", "w") as file:
+                file.write(str(score))
             
             # update hero
             self.hero.update(current_time)
@@ -133,7 +137,7 @@ class GameEngine:
                 self.SCREEN.blit(heart_icon, (x, 10))
 
             # go to end screen
-            if len(hearts) == 3:
+            if len(hearts) == 0:
                 #print("Game Over")  #  debugging
                 self.menu_Theme_music.play()
                 current_score = self.get_current_score()
@@ -148,10 +152,10 @@ class GameEngine:
                 if score > existing_high_score:
                     with open("Scores/scores.txt", "w") as file:
                         file.write(str(score))
-                    print("New high score:", score)  # Add this line for debugging
+                    print("New high score:", score)  
                     current_score = score  
                 else:
-                    print("Your score:", score)  # Add this line for debugging
+                    print("Your score:", score)  
                     current_score = score
                     return
 
