@@ -5,6 +5,10 @@ pygame.init()
 pygame.mixer.init()
 
 # SFX & Audio # 
+coinSFX = pygame.mixer.Sound("assets/sfx/collect.mp3")
+coinSFX.set_volume(0.35)
+jumpSFX = pygame.mixer.Sound("assets/sfx/jump1.mp3")
+jumpSFX.set_volume(0.45)
 
 # Button/sound  
 sound_path = "assets/sfx/click1.mp3"
@@ -21,7 +25,6 @@ def menu_Theme():
 
 def stop_menu_music(self):
     self.menu_Theme_music.stop()
-
 
 # MISC # 
 
@@ -57,63 +60,34 @@ def backgroundScroll(bg_image, bg_x, screen):
     screen.blit(bg_image, (bg_x + bg_image.get_width(), 0))
     return bg_x 
 
-# Score on screen
+# score on screen (gameEngine)
 def drawScore(SCREEN, score):
     score_text = get_font1(35).render(f"Score: {score}", True, (0, 0, 0))
     score_rect = score_text.get_rect(center=(SCREEN.get_width() // 2, 20))
     SCREEN.blit(score_text, score_rect)
 
+# GAME OVER txt
 def drawOver(SCREEN, x, y):
     over_text = get_font3(205).render("GAME OVER!!!", True, (132, 183, 15))
     over_rect = over_text.get_rect(topleft=(x, y))
     SCREEN.blit(over_text, over_rect)
 
+# draw Hscore (End)
+def drawHighscoreText(screen, text, x, y):
+    font = get_font(35)
+    text_surface = font.render(text, True, (255, 255, 255))
+    text_rect = text_surface.get_rect()
+    text_rect.center = (x, y)
+    screen.blit(text_surface, text_rect)
 
-# CHARACTER # 
-
-#Goobal variables 
-SCREEN_HEIGHT = 720
-JUMP_STRENGTH = -11
-GRAVITY = 0.1
-
-# hero class
-class Hero(pygame.sprite.Sprite):
-    def __init__(self, screen_height):
-        super().__init__()
-        self.image = pygame.image.load("assets/hero.png")
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (150, screen_height - self.rect.height - 250)
-        self.velocity_y = 0
-        self.is_jumping = False
-        self.coins_collected = 0
-        self.radius = self.rect.width // 2
-        self.health = 3
-
-    def take_damage(self, damage):
-        self.health -= damage
-        if self.health <= 0:
-            self.health = 0
-
-    def update(self):
-        # gravity
-        self.velocity_y += GRAVITY
-        self.rect.y += self.velocity_y
-
-        # Keep the character on the ground 
-        if self.rect.y >= SCREEN_HEIGHT - self.rect.height:
-            self.rect.y = SCREEN_HEIGHT - self.rect.height
-            self.is_jumping = False
-            self.velocity_y = 0
-
-    # jump function 
-    def jump(self):
-        if not self.is_jumping:
-            self.velocity_y = JUMP_STRENGTH
-            self.is_jumping = True
-
-   # increases number of coins collected by char then updates 
-    def collect_coin(self, value):
-        self.coins_collected += value
+# draw score
+def drawScore2(screen, score, x, y):
+    font = get_font(35)
+    score_text = f"Your Score: {score}"
+    text_surface = font.render(score_text, True, (255, 255, 255))
+    text_rect = text_surface.get_rect()
+    text_rect.topleft = (x, y)
+    screen.blit(text_surface, text_rect)
 
 
 

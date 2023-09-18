@@ -37,7 +37,7 @@ class HelpScreen:
             # Text dict
             categories = [
                 ("How To Play:", ["Avoid obstacles and collect coins!", "Beat previously set scores", "Challenge your friends!"]),
-                ("Coin Values:", ["Gold: N/A", "Silver: N/A", "Bronze: N/A"]),
+                ("Coin Values:", ["Gold: 55", "Silver: 15", "Bronze: 5"]),
                 ("Obstacles:", ["Boulders: 1Heart", "N/A: N/A"])
             ]
             

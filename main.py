@@ -94,5 +94,3 @@ if __name__ == "__main__":
 
     while True:
         game_state_manager.run()
-
-

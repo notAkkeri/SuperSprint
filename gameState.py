@@ -8,7 +8,7 @@ class GameStateManager:
         self.current_state = None
         self.args = None
 
-    def set_state(self, state_name, *args):
+    def set_state(self, state_name, *args, current_score=0):
         if state_name == "main_menu":
             from main import MainMenu 
             self.current_state = MainMenu(*args)
@@ -19,7 +19,7 @@ class GameStateManager:
         elif state_name == "help":
             self.current_state = HelpScreen(*args)
         elif state_name == "end":
-            self.current_state = EndScreen(*args)
+                    self.current_state = EndScreen(*args)
 
     def run(self):
         if self.current_state:
