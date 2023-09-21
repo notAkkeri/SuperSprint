@@ -8,7 +8,7 @@ pygame.mixer.init()
 coinSFX = pygame.mixer.Sound("assets/sfx/collect.mp3")
 coinSFX.set_volume(0.35)
 jumpSFX = pygame.mixer.Sound("assets/sfx/jump1.mp3")
-jumpSFX.set_volume(0.45)
+jumpSFX.set_volume(0.35)
 
 # Button/sound  
 sound_path = "assets/sfx/click1.mp3"
@@ -16,15 +16,30 @@ click_sound = pygame.mixer.Sound(sound_path)
 click_sound.set_volume(0.45)
 
 # Menu Theme
+menu_theme_sound = None  
 def menu_Theme():
-    mixer.init()
-    mixer.music.load("assets/sfx/menu.mp3")
-    mixer.music.play()
-    pygame.mixer.music.set_volume(0.3)
-    return mixer.music
+    global menu_theme_sound
 
-def stop_menu_music(self):
-    self.menu_Theme_music.stop()
+    if menu_theme_sound is None:
+        menu_theme_sound = pygame.mixer.Sound("assets/sfx/menu.mp3")
+        menu_theme_sound.set_volume(0.1)
+        menu_theme_sound.play()
+    
+    return menu_theme_sound
+# Game Theme
+def gameTheme():
+    game_theme_sound = pygame.mixer.Sound("assets/sfx/theme.mp3")
+    game_theme_sound.set_volume(0.05)
+    game_theme_sound.play()
+    return game_theme_sound
+
+# Gameover theme
+def gameOverTheme():
+    game_theme_sound = pygame.mixer.Sound("assets/sfx/gameOver.mp3")
+    game_theme_sound.set_volume(0.1)
+    game_theme_sound.play()
+    return game_theme_sound
+
 
 # MISC # 
 
@@ -49,10 +64,11 @@ def get_font4(size):
 
 
 # Icons
-def get_heart_icon():
-    return pygame.image.load("assets/heartIcon.png")
+#def get_heart_icon():
+ #   return pygame.image.load("assets/heartIcon.png")
 def get_boulder_icon():
     return pygame.image.load("assets/boulder.png")
+
 
 # Moving background
 def backgroundScroll(bg_image, bg_x, screen):

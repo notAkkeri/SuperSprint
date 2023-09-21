@@ -2,6 +2,7 @@ import random
 import pygame
 from sprite import *
 from misc import coinSFX
+from math import radians
 
 # Point value for coins 
 coin_values = {
@@ -11,7 +12,7 @@ coin_values = {
 }
 
 # Collection range 
-COLLISION_MARGIN = 7.5
+COLLISION_MARGIN = 5
 
 # Load images
 def load_images():
@@ -94,7 +95,7 @@ class CoinSpawner:
         coins_to_remove = []
 
         for coin in self.coins:
-            coin.rect.x -= 3  # coin speed
+            coin.rect.x -=  5 # coin speed
 
             # remove coin if collected or goes off screen
             if coin.rect.x + coin.rect.width < 0 or coin.collected:
@@ -218,11 +219,19 @@ class Boulder(pygame.sprite.Sprite):
         self.image = boulderImage
         self.rect = self.image.get_rect()
         self.rect.topleft = (screen_width, screen_height - self.rect.height)
-        self.speed = 7.5  # movement speed of boulder
+        self.speed = 12  # movement speed of boulder
         self.collided = False
+        self.angle = 0  
+        self.rotation_speed = 12  # Rotation speed * per frame
 
     def update(self):
         self.rect.x -= self.speed
+
+        # rotation illusion 
+        self.angle += self.rotation_speed
+        self.angle %= 360  # Wrap angle within 360 degrees
+        self.image = pygame.transform.rotate(boulderImage, self.angle)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
     def check_collision(self, hero, hearts):
         if not self.collided and self.rect.colliderect(hero.rect):

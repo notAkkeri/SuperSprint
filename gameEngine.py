@@ -12,21 +12,61 @@ class GameEngine:
         self.game_screen = True
         self.clock = pygame.time.Clock()
         self.SCREEN_HEIGHT = 720
+        
         # Themes
-        # game_Theme_Music =  game_theme()
+        self.game_Theme_Music = gameTheme() 
         self.menu_Theme_music = menu_Theme()
-        self.hero = Hero(spriteRun, run_frames, jump_frames, hurt_frames)
+        self.menu_theme_playing = True  
+        self.game_theme_playing = False  
+        
         pygame.init() 
+        pygame.mixer.init()
+        mixer.init()
+
+        # hero init
+        self.hero = Hero(spriteRun, run_frames, jump_frames, hurt_frames)
+        self.heart_sprites = self.create_heart_sprites()
 
         # Coin spawner ()
         self.coin_spawner = CoinSpawner(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)
-        #returns score value
+
+    def create_heart_sprites(self):
+        heart_sprites = []
+        spacing = 2
+        heart_width = heart_frames[0].get_width()
+        num_hearts = self.hero.health
+        initial_x = 900
+        y = 10  # Adjust the y-coordinate to align with the score
+
+        for i in range(num_hearts):
+            x = initial_x + (i * (heart_width + spacing))
+            heart_sprite = HeartSprite(heart_frames, x, y)  
+            heart_sprites.append(heart_sprite)
+
+        return heart_sprites
+
+    # Returns score value
     def get_current_score(self):
         return self.coin_spawner.score
 
+    def update_heart_sprites(self):
+        for i, heart_sprite in enumerate(self.heart_sprites):
+            heart_sprite.update()
+            x = 900 + (i * (heart_sprite.rect.width + 2))
+            heart_sprite.rect.x = x
+            
     def run(self):
         #print("entering game")
-        self.menu_Theme_music.stop()
+        if self.menu_theme_playing:
+            self.menu_Theme_music.stop()
+            self.menu_theme_playing = False
+            print("Menu theme stopped!")
+
+        # Check if the game theme is not playing and start it
+        if not self.game_theme_playing:
+            self.game_Theme_Music.play()
+            self.game_theme_playing = True
+            print("Game theme playing")
         # scores 
         score = 0
         existing_high_score = 0
@@ -34,11 +74,6 @@ class GameEngine:
 
         # ct
         current_time = pygame.time.get_ticks()
-
-        # healthy (lives)
-        heart_icon = pygame.transform.scale(get_heart_icon(), (45, 45))     
-        lives = 3
-        hearts = [heart_icon] * lives
 
         # background 
         gameBG = pygame.image.load("assets/gameBG.png")
@@ -86,11 +121,6 @@ class GameEngine:
             # coin speed
             self.coin_spawner.update_coins()
 
-            #self.coin_spawner.activate_coin() 
-            #Update the CoinSpawner
-            #coin_spawner.spawn_coins()
-            #coin_spawner.update_coins()
-
             # Boulder
             boulder_spawner.spawn_boulders()
             boulder_spawner.update()
@@ -104,8 +134,6 @@ class GameEngine:
                     boulder_spawner.boulders.remove(boulder)
                     if self.hero.health > 0:
                         self.hero.take_damage(1)  
-                        hearts.pop()
-                        print("Hero collided with a boulder. Health:", self.hero.health)
 
             # display score 
             score = self.coin_spawner.score  
@@ -118,7 +146,13 @@ class GameEngine:
             # update hero
             self.hero.update(current_time)
 
-            # Draw the hero character
+            # Update health 
+            self.update_heart_sprites() 
+            for heart_sprite in self.heart_sprites:
+                heart_sprite.update()
+                self.SCREEN.blit(heart_sprite.image, heart_sprite.rect)
+
+                # Draw the hero character
             self.SCREEN.blit(self.hero.image, self.hero.rect)
 
             # Draw coins & collection handler
@@ -131,15 +165,13 @@ class GameEngine:
                         self.coin_spawner.score += coin.value
                         coin.collect()
             
-            # heart display
-            for i in range(self.hero.health):
-                x = self.SCREEN.get_width() - 50 - (i * (heart_icon.get_width() + 5))
-                self.SCREEN.blit(heart_icon, (x, 10))
+            # Update and draw heart sprites
+            for heart_sprite in self.heart_sprites:
+                heart_sprite.update()
+                self.SCREEN.blit(heart_sprite.image, heart_sprite.rect)
 
             # go to end screen
-            if len(hearts) == 0:
-                #print("Game Over")  #  debugging
-                self.menu_Theme_music.play()
+            if self.hero.health == 0:
                 current_score = self.get_current_score()
                 self.game_state_manager.set_state("end", self.SCREEN, self.game_state_manager, current_score=current_score)
                 existing_high_score = 0

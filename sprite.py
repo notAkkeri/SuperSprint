@@ -5,15 +5,15 @@ pygame.init()
 
 # Global constants
 SCREEN_HEIGHT = 720
+SCREEN_WIDTH = 1280
 JUMP_STRENGTH = -12.25
 GRAVITY = 0.135
 JUMP_COOLDOWN_DURATION = 850
 
-# Load sprite sheets
+# Load Hero sprite sheets
 spriteHurt = pygame.image.load("assets/spriteHurt.png")
 spriteJump = pygame.image.load("assets/spriteJump.png")
 spriteRun = pygame.image.load("assets/spriteRun.png")
-
 # Define frame dimensions
 frame_width_hurt = 128  
 frame_height_hurt = 128  
@@ -139,3 +139,42 @@ class Hero(pygame.sprite.Sprite):
 
 # Define what the Hero class is
 hero = Hero(spriteRun, run_frames, jump_frames, hurt_frames)
+
+heart_frames = [
+    pygame.image.load("assets/Hearts/heartSprite_0.png"),
+    pygame.image.load("assets/Hearts/heartSprite_1.png"),
+    pygame.image.load("assets/Hearts/heartSprite_2.png"),
+    pygame.image.load("assets/Hearts/heartSprite_3.png"),
+    pygame.image.load("assets/Hearts/heartSprite_4.png"),
+    pygame.image.load("assets/Hearts/heartSprite_5.png"),
+    pygame.image.load("assets/Hearts/heartSprite_6.png"),
+    pygame.image.load("assets/Hearts/heartSprite_7.png"),
+    pygame.image.load("assets/Hearts/heartSprite_8.png"),
+    pygame.image.load("assets/Hearts/heartSprite_9.png")
+]
+
+class HeartSprite(pygame.sprite.Sprite):
+    def __init__(self, frames, x, y):
+        super().__init__()
+        self.frames = frames
+        self.current_frame = 0
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.frame_count = 0
+        self.animation_speed = 45
+        self.forward = True  
+    def update(self):
+        self.frame_count += 1
+        if self.frame_count % self.animation_speed == 0:
+            if self.forward:
+                self.current_frame = (self.current_frame + 1) % len(self.frames)
+                if self.current_frame == len(self.frames) - 1:
+                    self.forward = False
+            else:
+                self.current_frame = (self.current_frame - 1) % len(self.frames)
+                if self.current_frame == 0:
+                    self.forward = True
+            self.image = self.frames[self.current_frame]
+
