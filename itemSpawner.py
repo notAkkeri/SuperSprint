@@ -1,13 +1,13 @@
 import random
 import pygame
 from sprite import *
-from misc import coinSFX
+from misc import coinSFX, crashSFX
 from math import radians
 
 # Point value for coins 
 coin_values = {
     "gold": 55,
-    "silver": 15,
+    "silver": 25,
     "bronze": 5
 }
 
@@ -95,7 +95,7 @@ class CoinSpawner:
         coins_to_remove = []
 
         for coin in self.coins:
-            coin.rect.x -=  5 # coin speed
+            coin.rect.x -=  7 # coin speed
 
             # remove coin if collected or goes off screen
             if coin.rect.x + coin.rect.width < 0 or coin.collected:
@@ -107,8 +107,8 @@ class CoinSpawner:
     def spawn_coins(self):
         coin_probabilities = {
             "gold": 0.1,
-            "silver": 0.30,
-            "bronze": 0.6
+            "silver": 0.22,
+            "bronze": 0.68
         }
         current_time = pygame.time.get_ticks()  # tracks spawntime
         time_elapsed = current_time - self.last_spawn_time
@@ -145,7 +145,7 @@ class CoinSpawner:
     def activate_coin(self):
         coin_type = random.choices(
             ["gold", "silver", "bronze"],
-            weights=[0.08, 0.20, 0.72],
+            weights=[0.1, 0.22, 0.68],
             k=1
         )[0]
 
@@ -248,7 +248,7 @@ class BoulderSpawner(pygame.sprite.Sprite):
         self.screen_height = screen_height
         self.boulders = []
         self.last_spawn_time = pygame.time.get_ticks()
-        self.spawn_interval = 5500  # spawn cooldown (1000 = 1 second)
+        self.spawn_interval = 6500  # spawn cooldown (1000 = 1 second)
 
     def spawn_boulders(self):
         current_time = pygame.time.get_ticks()

@@ -163,7 +163,7 @@ class HeartSprite(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.frame_count = 0
-        self.animation_speed = 45
+        self.animation_speed = 65
         self.forward = True  
     def update(self):
         self.frame_count += 1

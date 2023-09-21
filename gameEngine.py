@@ -35,12 +35,11 @@ class GameEngine:
         spacing = 2
         heart_width = heart_frames[0].get_width()
         num_hearts = self.hero.health
-        initial_x = 900
-        y = 10  # Adjust the y-coordinate to align with the score
+        y = -65
 
         for i in range(num_hearts):
-            x = initial_x + (i * (heart_width + spacing))
-            heart_sprite = HeartSprite(heart_frames, x, y)  
+            x = self.SCREEN.get_width() - (i * (heart_width + spacing))
+            heart_sprite = HeartSprite(heart_frames, x, y)
             heart_sprites.append(heart_sprite)
 
         return heart_sprites
@@ -54,6 +53,12 @@ class GameEngine:
             heart_sprite.update()
             x = 900 + (i * (heart_sprite.rect.width + 2))
             heart_sprite.rect.x = x
+            
+        # removes heart display if hero loses health
+        while len(self.heart_sprites) > self.hero.health:
+            heart_to_remove = self.heart_sprites.pop()
+            #heart_to_remove.kill()
+
             
     def run(self):
         #print("entering game")
@@ -102,7 +107,7 @@ class GameEngine:
             # hero jump cd duration check
             if keys[pygame.K_SPACE]:
                 self.hero.jump(current_time)
-            # hero state
+            # hero state & jumping checks 
             is_running = True
             is_jumping = False  
             if keys[pygame.K_SPACE]:
@@ -114,39 +119,36 @@ class GameEngine:
             self.hero.is_jumping = is_jumping
             self.hero.is_hurt = is_hurt
 
-            # Spawn coins
+            # spawns the coins 
             for x in range(3):
                 self.coin_spawner.spawn_coins()
             
             # coin speed
             self.coin_spawner.update_coins()
 
-            # Boulder
+            # displays boulder on screen
             boulder_spawner.spawn_boulders()
             boulder_spawner.update()
             for boulder in boulder_spawner.boulders:
                 self.SCREEN.blit(boulder.image, boulder.rect)
 
-                # boulder collision
+            # boulder collision
             for i, boulder in enumerate(boulder_spawner.boulders):
                 if not boulder.collided and boulder.rect.colliderect(self.hero.rect):
                     boulder.collided = True
                     boulder_spawner.boulders.remove(boulder)
                     if self.hero.health > 0:
-                        self.hero.take_damage(1)  
+                        self.hero.take_damage(1) 
+                    crashSFX.play()
 
-            # display score 
+            # display  & update scores
             score = self.coin_spawner.score  
             drawScore(self.SCREEN, score)
-
-            # update current scores
             with open("Scores/currentScore.txt", "w") as file:
                 file.write(str(score))
             
-            # update hero
-            self.hero.update(current_time)
-
-            # Update health 
+            # update sprites 
+            self.hero.update(current_time) 
             self.update_heart_sprites() 
             for heart_sprite in self.heart_sprites:
                 heart_sprite.update()
@@ -165,13 +167,18 @@ class GameEngine:
                         self.coin_spawner.score += coin.value
                         coin.collect()
             
-            # Update and draw heart sprites
+            # draws & updates hearts 
             for heart_sprite in self.heart_sprites:
                 heart_sprite.update()
                 self.SCREEN.blit(heart_sprite.image, heart_sprite.rect)
 
             # go to end screen
             if self.hero.health == 0:
+                # stops music 
+                if self.game_theme_playing:
+                    self.game_Theme_Music.stop()
+                    self.game_theme_playing = False
+                
                 current_score = self.get_current_score()
                 self.game_state_manager.set_state("end", self.SCREEN, self.game_state_manager, current_score=current_score)
                 existing_high_score = 0
@@ -190,6 +197,7 @@ class GameEngine:
                     print("Your score:", score)  
                     current_score = score
                     return
+
 
             # event handler 
             for event in pygame.event.get():

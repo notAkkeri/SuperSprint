@@ -9,6 +9,8 @@ coinSFX = pygame.mixer.Sound("assets/sfx/collect.mp3")
 coinSFX.set_volume(0.35)
 jumpSFX = pygame.mixer.Sound("assets/sfx/jump1.mp3")
 jumpSFX.set_volume(0.35)
+crashSFX = pygame.mixer.Sound("assets/sfx/crash.mp3")
+jumpSFX.set_volume(0.35)
 
 # Button/sound  
 sound_path = "assets/sfx/click1.mp3"
@@ -35,10 +37,10 @@ def gameTheme():
 
 # Gameover theme
 def gameOverTheme():
-    game_theme_sound = pygame.mixer.Sound("assets/sfx/gameOver.mp3")
-    game_theme_sound.set_volume(0.1)
-    game_theme_sound.play()
-    return game_theme_sound
+    gameOver = pygame.mixer.Sound("assets/sfx/gameOverTheme.mp3")
+    gameOver.set_volume(0.1)
+    gameOver.play()
+    return gameOver
 
 
 # MISC # 
