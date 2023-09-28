@@ -1,7 +1,7 @@
 import random
 import pygame
 from sprite import *
-from misc import coinSFX, crashSFX
+from misc import coinSFX, crashSFX, get_forsaken_icon
 from math import radians
 
 # Point value for coins 
@@ -268,5 +268,45 @@ class BoulderSpawner(pygame.sprite.Sprite):
         for boulder in self.boulders:
             SCREEN.blit(boulder.image, boulder.rect)
 
+# Forsaken  Heart 
+class ForsakenHeart(pygame.sprite.Sprite):
+    def __init__(self, screen_width, screen_height, hero, active_forsaken_hearts=None, spawn_interval=None):
+        super().__init__()
+        self.image = get_forsaken_icon()
+        self.rect = self.image.get_rect()
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.spawn_timer = pygame.time.get_ticks()
+        self.collected = False
+        self.value = 200
+        self.hero = hero
+        self.active_forsaken_hearts = active_forsaken_hearts
+        self.spawn_interval = spawn_interval  
+        self.rect.x = self.screen_width
+        self.rect.y = random.randint(50, self.screen_height - self.rect.height - 50)
 
+    def update(self, current_time):
+        self.rect.x -= 5  # Movement speed
+        if self.rect.right < 0:
+            self.rect.x = self.screen_width
+            self.rect.y = random.randint(50, self.screen_height - self.rect.height - 50)
+
+
+    def spawn_forsaken_heart(self):
+        y = self.screen_height - self.rect.height
+        x = random.randint(0, self.screen_width - self.rect.width)
+        self.rect.topleft = (x, y)
+        print(f"ForsakenHeart spawned at ({x}, {y})")
+
+    def collect(self):
+        if not self.collected:
+            self.collected = True
+            self.hero.score += self.value
+            if self.hero.health < 3:
+                self.hero.health += 1
+                if self.hero.health <= 3:
+                    lost_heart = self.hero.heart_sprites[-1]
+                    x = lost_heart.rect.x
+                    new_heart_sprite = HeartSprite(heart_frames, x, lost_heart.rect.y, scale=0.5)
+                    self.hero.heart_sprites.insert(-1, new_heart_sprite)
 

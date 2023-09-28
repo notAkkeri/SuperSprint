@@ -70,6 +70,8 @@ def get_font4(size):
  #   return pygame.image.load("assets/heartIcon.png")
 def get_boulder_icon():
     return pygame.image.load("assets/boulder.png")
+def get_forsaken_icon():
+    return pygame.image.load("assets/forsakenHeart.png")
 
 
 # Moving background
@@ -81,13 +83,17 @@ def backgroundScroll(bg_image, bg_x, screen):
     screen.blit(bg_image, (bg_x + bg_image.get_width(), 0))
     return bg_x 
 
+
 # ON SCREEN TEXT #
 
-# score on screen (gameEngine)
-def drawScore(SCREEN, score):
-    score_text = get_font4(35).render(f"Score: {score}", True, (0, 0, 0))
-    score_rect = score_text.get_rect(center=(SCREEN.get_width() // 2, 20))
-    SCREEN.blit(score_text, score_rect)
+# score on screen & timer (gameEngine)
+def drawScore(SCREEN, score, timer):
+    score_text = get_font4(25).render(f"Score: {score}", True, (0, 0, 0))
+    timer_text = get_font4(20).render(timer[6:], True, (0, 0, 0)) 
+    timer_rect = timer_text.get_rect(topleft=(45, 20))
+
+    SCREEN.blit(score_text, (SCREEN.get_width() // 2 - score_text.get_width() // 2, 20))
+    SCREEN.blit(timer_text, timer_rect)
 
 # GAME OVER txt
 def drawOver(SCREEN, x, y):

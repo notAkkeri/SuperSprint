@@ -154,17 +154,19 @@ heart_frames = [
 ]
 
 class HeartSprite(pygame.sprite.Sprite):
-    def __init__(self, frames, x, y):
+    def __init__(self, frames, x, y, scale=3.0):  
         super().__init__()
         self.frames = frames
+        self.heart_sprites = []
         self.current_frame = 0
-        self.image = self.frames[self.current_frame]
+        self.scale = scale  
+        self.image = pygame.transform.scale(frames[self.current_frame], (int(frames[self.current_frame].get_width() * scale), int(frames[self.current_frame].get_height() * scale)))  # Scale the image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.frame_count = 0
-        self.animation_speed = 65
-        self.forward = True  
+        self.animation_speed = 75
+        self.forward = True
     def update(self):
         self.frame_count += 1
         if self.frame_count % self.animation_speed == 0:

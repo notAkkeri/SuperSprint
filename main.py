@@ -16,7 +16,7 @@ game_state_manager = GameStateManager()
 
 # Initialize menu theme music
 menu_Theme_music = menu_Theme()
-menu_music_started = False  # 
+menu_music_started = False   
 
 # The main menu
 class MainMenu:
@@ -69,7 +69,7 @@ class MainMenu:
                         click_sound.play()
                         if not menu_music_started:
                             menu_Theme_music.play(-1)
-                            menu_music_started = True
+                            menu_music_started = True                                  
                         self.game_state_manager.set_state("game", self.SCREEN, game_state_manager=self.game_state_manager)
                         return
 
@@ -90,7 +90,7 @@ class MainMenu:
             pygame.display.update()
 
 if __name__ == "__main__":
-    game_state_manager.set_menu_theme()  # 
+    game_state_manager.set_menu_theme()  
     game_state_manager.set_state("main_menu", SCREEN, game_state_manager=game_state_manager)
 
     while True:
