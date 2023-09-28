@@ -10,8 +10,17 @@ BG = pygame.image.load("assets/background.png")
 title = pygame.image.load("assets/logo.png")
 pygame.display.set_caption("Menu")
 
+<<<<<<< Updated upstream
 def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)
+=======
+game_state_manager = GameStateManager()
+
+# Initialize menu theme music
+menu_Theme_music = menu_Theme()
+menu_music_started = False   
+
+>>>>>>> Stashed changes
 # The main menu
 def mainMenu():
     while True:
@@ -55,11 +64,38 @@ def mainMenu():
                 if EXIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
+<<<<<<< Updated upstream
                 if credits_button.checkForInput(MENU_MOUSE_POS) and pygame.mouse.get_pressed()[0]:
                     displayCredits(SCREEN) 
                     pygame.display.set_caption("Menu")
+=======
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        click_sound.play()
+                        if not menu_music_started:
+                            menu_Theme_music.play(-1)
+                            menu_music_started = True                                  
+                        self.game_state_manager.set_state("game", self.SCREEN, game_state_manager=self.game_state_manager)
+                        return
+>>>>>>> Stashed changes
 
 
         pygame.display.update()
 
+<<<<<<< Updated upstream
 mainMenu()
+=======
+                    if CREDITS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                        click_sound.play()
+                        self.game_state_manager.set_state("credits", self.SCREEN, game_state_manager=self.game_state_manager)
+                        return
+
+            pygame.display.update()
+
+if __name__ == "__main__":
+    game_state_manager.set_menu_theme()  
+    game_state_manager.set_state("main_menu", SCREEN, game_state_manager=game_state_manager)
+
+    while True:
+        game_state_manager.run()
+>>>>>>> Stashed changes
