@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 import pygame
 import sys
 from misc import *
@@ -33,25 +31,33 @@ class GameEngine:
         self.coin_spawner = CoinSpawner(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)
 
         # Forsaken heart
-        self.forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height())
-        self.forsaken_heart_value = 200
+        self.forsaken_heart_spawn_time = pygame.time.get_ticks()
+        self.forsaken_heart_spawn_interval = 55000
+        self.forsaken_heart_last_spawn = 0 
+        self.forsaken_heart = None 
         self.forsaken_heart_restores_life = True
-        self.heart_sprites = self.create_heart_sprites()
+        self.active_forsaken_hearts = []
+        self.forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero, self.active_forsaken_hearts, self.forsaken_heart_spawn_interval)
 
-
-        # timer
+        # time
         self.timer = 0
-        self.previous_time = pygame.time.get_ticks() 
+        self.previous_time = pygame.time.get_ticks()
 
+        
     def forsaken_heart_collected(self):
-        # Check if the hero has 3 hearts
         if self.hero.health == 3:
             self.coin_spawner.score += 200
         else:
-            # Otherwise, restore one heart to the hero
             if self.forsaken_heart_restores_life:
                 if self.hero.health < 3:
                     self.hero.health += 1
+                    # Add a new heart sprite if health is less than 3
+                    if self.hero.health <= 3:
+                        # Find the position of the most recently lost heart
+                        lost_heart = self.heart_sprites[-1]  # Index -1 corresponds to the most recently lost heart
+                        x = lost_heart.rect.x
+                        new_heart_sprite = HeartSprite(heart_frames, x, lost_heart.rect.y, scale=0.5)
+                        self.heart_sprites.insert(-1, new_heart_sprite)
 
 
     def format_time(self, milliseconds):
@@ -63,23 +69,21 @@ class GameEngine:
 
     def create_heart_sprites(self):
         heart_sprites = []
-        spacing = 10  
-        heart_width = heart_frames[0].get_width() 
-        num_hearts = self.hero.health
+        spacing = 10
+        heart_width = heart_frames[0].get_width()
+        num_hearts = self.hero.health  # Use the 'health' attribute instead
         y = -65
 
         initial_x = self.SCREEN.get_width() - (num_hearts * (heart_width + spacing))
 
         for i in range(num_hearts):
             x = initial_x + i * (heart_width + spacing)
-            heart_sprite = HeartSprite(heart_frames, x, y, scale=0.5)  #
+            heart_sprite = HeartSprite(heart_frames, x, y, scale=0.5)
             heart_sprites.append(heart_sprite)
 
         return heart_sprites
 
-    # Returns score value
-    def get_current_score(self):
-        return self.coin_spawner.score
+
 
     def update_heart_sprites(self):
         for i, heart_sprite in enumerate(self.heart_sprites):
@@ -89,7 +93,11 @@ class GameEngine:
 
         while len(self.heart_sprites) > self.hero.health:
             heart_to_remove = self.heart_sprites.pop()
-            # heart_to_remove.kill()
+
+        # Returns score value
+    def get_current_score(self):
+        return self.coin_spawner.score
+    
          
     def run(self):
         #print("entering game")
@@ -157,15 +165,22 @@ class GameEngine:
             self.hero.is_jumping = is_jumping
             self.hero.is_hurt = is_hurt
 
-            # fHeart
-            self.forsaken_heart.update(current_time)
-            # fHeart collection
-            if self.hero.rect.colliderect(self.forsaken_heart.rect):
-                self.forsaken_heart_collected()
-            # draw heart
-            self.SCREEN.blit(self.forsaken_heart.image, self.forsaken_heart.rect)
+            if self.forsaken_heart:
+                self.forsaken_heart.update(current_time)
+                if self.hero.rect.colliderect(self.forsaken_heart.rect):
+                    self.forsaken_heart_collected()
+                    self.forsaken_heart = None
+            else:
+                current_time = pygame.time.get_ticks()
+                if current_time - self.forsaken_heart_spawn_time >= self.forsaken_heart_spawn_interval:
+                    self.forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)
+                    self.forsaken_heart_spawn_time = current_time
+
+            if self.forsaken_heart:
+                self.SCREEN.blit(self.forsaken_heart.image, self.forsaken_heart.rect)
 
 
+                
             # spawns the coins 
             for x in range(3):
                 self.coin_spawner.spawn_coins()
@@ -260,4 +275,3 @@ class GameEngine:
             
                     
             pygame.display.update()
->>>>>>> Stashed changes

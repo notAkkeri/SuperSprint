@@ -154,9 +154,10 @@ heart_frames = [
 ]
 
 class HeartSprite(pygame.sprite.Sprite):
-    def __init__(self, frames, x, y, scale=1.0):  # Accept a scale parameter
+    def __init__(self, frames, x, y, scale=3.0):  
         super().__init__()
         self.frames = frames
+        self.heart_sprites = []
         self.current_frame = 0
         self.scale = scale  
         self.image = pygame.transform.scale(frames[self.current_frame], (int(frames[self.current_frame].get_width() * scale), int(frames[self.current_frame].get_height() * scale)))  # Scale the image
