@@ -7,8 +7,8 @@ class GameStateManager:
     def __init__(self):
         self.current_state = None
         self.args = None
-        self.menu_Theme_music = None  # Initialize menu theme music here
-        self.game_Theme_music = None  # Initialize game theme music here
+        self.menu_Theme_music = None  
+        self.game_Theme_music = None 
 
     def set_menu_theme(self):
         if self.menu_Theme_music is None:
@@ -16,14 +16,14 @@ class GameStateManager:
             self.menu_Theme_music = menu_Theme()
             self.menu_Theme_music.play(-1)
 
-    def set_state(self, state_name, SCREEN, game_state_manager, menu_Theme_music=None, *args, current_score=0):
+    def set_state(self, state_name, SCREEN, game_state_manager, *args, current_score=0):
         if state_name == "main_menu":
             from main import MainMenu 
-            self.set_menu_theme()  # Start or reuse the menu theme
+            self.set_menu_theme()
             main_menu = MainMenu(SCREEN, game_state_manager)
-            main_menu.menu_Theme_music = self.menu_Theme_music  # Assign the menu theme music
-            self.current_state = main_menu
 
+            self.current_state = main_menu
+            
         elif state_name == "game":
             if self.game_Theme_music is not None:
                 self.game_Theme_music.stop() 

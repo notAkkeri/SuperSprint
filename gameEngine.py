@@ -43,6 +43,10 @@ class GameEngine:
         self.timer = 0
         self.previous_time = pygame.time.get_ticks()
 
+        #bg 
+        self.scroll_speed = 3  #base bg speed 
+        self.scroll_speed_increase_interval = 20000 # increase after 20seconds
+        self.scroll_speed_increase_timer = pygame.time.get_ticks()
         
     def forsaken_heart_collected(self):
         if self.hero.health == 3:
@@ -138,14 +142,17 @@ class GameEngine:
             elapsed_time = current_time - self.previous_time
             self.previous_time = current_time
 
-            # FPS counter
+
             # background 
-            backgroundScroll(gameBG, bg_x, self.SCREEN)
-            bg_x = backgroundScroll(gameBG, bg_x, self.SCREEN)
+            bg_x = backgroundScroll(gameBG, bg_x, self.SCREEN, elapsed_time, self.scroll_speed)
             
             # current game time
             current_time = pygame.time.get_ticks() 
             self.hero.update(current_time)
+
+            if elapsed_time >= self.scroll_speed_increase_interval:
+                self.scroll_speed += 2  # increase the background speed by 2
+                self.scroll_speed_increase_timer = current_time  # reset timer
 
             # keys
             keys = pygame.key.get_pressed()
@@ -191,6 +198,7 @@ class GameEngine:
             # displays boulder on screen
             boulder_spawner.spawn_boulders()
             boulder_spawner.update()
+            
             for boulder in boulder_spawner.boulders:
                 self.SCREEN.blit(boulder.image, boulder.rect)
 

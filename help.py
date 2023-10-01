@@ -3,18 +3,17 @@ import sys
 from button import Button
 from misc import get_font, get_font1, click_sound
 
-class HelpScreen: 
-    def __init__(self, SCREEN, game_state_manager, menu_Theme_music):  # Pass the menu theme music
+class HelpScreen:
+    def __init__(self, SCREEN, game_state_manager, menu_Theme_music):
         self.SCREEN = SCREEN
         self.game_state_manager = game_state_manager
-        self.help_screen = True
         self.menu_Theme_music = menu_Theme_music
         self.back_button = Button(image=pygame.image.load("assets/rect1.png"), pos=(80, 640),
                                 text_input="BACK", font=get_font(30), base_color="#f1e8ef", hovering_color="#1b1018",
                                 click_sound=click_sound)
-
+    
     def run(self):
-        while self.help_screen:
+        while True:  
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -23,9 +22,9 @@ class HelpScreen:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.back_button.checkForInput(pygame.mouse.get_pos()):
                         click_sound.play()
-                        self.help_screen = False
                         self.game_state_manager.set_state("main_menu", self.SCREEN, self.game_state_manager) 
-                        return  
+                        return
+
 
 
             self.SCREEN.fill((0, 0, 0))

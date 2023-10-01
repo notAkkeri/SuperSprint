@@ -6,16 +6,16 @@ pygame.mixer.init()
 
 # SFX & Audio # 
 coinSFX = pygame.mixer.Sound("assets/sfx/collect.mp3")
-coinSFX.set_volume(0.35)
+coinSFX.set_volume(0.25)
 jumpSFX = pygame.mixer.Sound("assets/sfx/jump1.mp3")
-jumpSFX.set_volume(0.35)
+jumpSFX.set_volume(0.25)
 crashSFX = pygame.mixer.Sound("assets/sfx/crash.mp3")
-jumpSFX.set_volume(0.35)
+jumpSFX.set_volume(0.25)
 
 # Button/sound  
 sound_path = "assets/sfx/click1.mp3"
 click_sound = pygame.mixer.Sound(sound_path)
-click_sound.set_volume(0.45)
+click_sound.set_volume(0.25)
 
 # Menu Theme
 menu_theme_sound = None  
@@ -75,13 +75,14 @@ def get_forsaken_icon():
 
 
 # Moving background
-def backgroundScroll(bg_image, bg_x, screen):
-    bg_x -= 1 
+def backgroundScroll(bg_image, bg_x, screen, elapsed_time, scroll_speed):
+    bg_x -= scroll_speed  
     if bg_x < -bg_image.get_width():
         bg_x = 0
     screen.blit(bg_image, (bg_x, 0))
     screen.blit(bg_image, (bg_x + bg_image.get_width(), 0))
-    return bg_x 
+    return bg_x
+
 
 
 # ON SCREEN TEXT #

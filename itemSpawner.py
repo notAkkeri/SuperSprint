@@ -11,9 +11,6 @@ coin_values = {
     "bronze": 5
 }
 
-# Collection range 
-COLLISION_MARGIN = 5
-
 # Load images
 def load_images():
     coin_images = {
@@ -25,6 +22,9 @@ def load_images():
     return coin_images, boulder_image
 
 coinImages, boulderImage = load_images()
+
+# Mask for boulder
+boulder_mask = pygame.mask.from_surface(boulderImage)
 
 # ITEMS #
 
@@ -95,7 +95,7 @@ class CoinSpawner:
         coins_to_remove = []
 
         for coin in self.coins:
-            coin.rect.x -=  7 # coin speed
+            coin.rect.x -=  8 # coin speed
 
             # remove coin if collected or goes off screen
             if coin.rect.x + coin.rect.width < 0 or coin.collected:
@@ -157,60 +157,6 @@ class CoinSpawner:
         self.coins.append(coin)
         print(f"Spawned a {coin_type} coin at ({coin_x}, {coin_y})")
 
-#class CoinSpawner:
-  #  def __init__(self, screen_width, screen_height, hero):
-  #      self.screen_width = screen_width
-   #     self.screen_height = screen_height
-   #     self.coin_values = coin_values
-   #     self.coin_images = coinImages  
-  #      self.coins = []
-  #      self.last_spawn_time = pygame.time.get_ticks()  # Initialize with current time
-  #      self.hero = hero
-  #      self.score = 0 
-   #     self.coin_pool = CoinPool(screen_width, screen_height)
-
-   # def spawn_coins(self):
-   #     coin_probabilities = {
-   #         "gold": 0.08,
-   #         "silver": 0.20,
-   #         "bronze": 0.72
-    #    }
-   #     current_time = pygame.time.get_ticks()  # Get the current time in milliseconds
-   #     time_elapsed = current_time - self.last_spawn_time
-
-   #    if time_elapsed >= 850:  # Spawn coins every 850 milliseconds
-   #         for coin_type, probability in coin_probabilities.items():
-     #           if random.random() < probability:
-     #               coin_x = self.screen_width
-      #              coin_y = random.randint(100, self.screen_height - coinImages[coin_type].get_height())
-      #              coin_value = coin_values.get(coin_type, 0)
-      #              coin = self.coin_pool.create_coin(coin_x, coin_y, coin_type, coin_value)
-      #              self.coins.append(coin)
-     #       self.last_spawn_time = current_time
-
-# Update coins (spawning)
-#    def update_coins(self):
- #       coins_to_remove = []
-
-  #      for coin in self.coins:
-  #          coin.rect.x -= 3  # coin movement speed
-   #         if coin.rect.x + coin.rect.width < 0 or coin.collected:
-     #           coins_to_remove.append(coin)
-      #          self.coin_pool.despawn_coin(coin)
-       #     else:
-        #        coin_rect = pygame.Rect(
-       #             coin.rect.x - COLLISION_MARGIN, 
-       #             coin.rect.y - COLLISION_MARGIN, 
-        #            coin.rect.width + 2 * COLLISION_MARGIN, 
-        #            coin.rect.height + 2 * COLLISION_MARGIN
-         #       )
-          #      if not coin.collected and self.hero.rect.colliderect(coin_rect):
-          #          coin.collected = True
-          #          self.score += coin.value
-                    # print(f"Collected {coin.image} coin, It's worth {coin.value} points!")
-        #for coin in coins_to_remove: 
-        #    self.coins.remove(coin)
-
 # Boulders #
 
 class Boulder(pygame.sprite.Sprite):
@@ -219,13 +165,16 @@ class Boulder(pygame.sprite.Sprite):
         self.image = boulderImage
         self.rect = self.image.get_rect()
         self.rect.topleft = (screen_width, screen_height - self.rect.height)
-        self.speed = 12  # movement speed of boulder
+        self.speed = 12  # boulder speed 
         self.collided = False
         self.angle = 0  
-        self.rotation_speed = 12  # Rotation speed * per frame
+        self.rotation_speed = self.speed  
+        self.mask = pygame.mask.from_surface(self.image)
+
 
     def update(self):
         self.rect.x -= self.speed
+        self.rotation_speed = self.speed
 
         # rotation illusion 
         self.angle += self.rotation_speed
@@ -234,12 +183,14 @@ class Boulder(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def check_collision(self, hero, hearts):
-        if not self.collided and self.rect.colliderect(hero.rect):
-            self.collided = True
-            if hero.health > 0:  # Check if hero has health left
-                hero.health -= 1  # Decrement hero's health
-                hearts.pop()  # Remove one heart icon from the list
-            print(f"Hero has been hit!")
+        if not self.collided:
+            if pygame.sprite.collide_mask(self, hero):
+                self.collided = True
+                if hero.health > 0:  
+                    hero.health -= 1
+                    hearts.pop()  
+
+                print(f"Hero has been hit!")
 
 class BoulderSpawner(pygame.sprite.Sprite):
     def __init__(self, screen_width, screen_height):
@@ -248,14 +199,25 @@ class BoulderSpawner(pygame.sprite.Sprite):
         self.screen_height = screen_height
         self.boulders = []
         self.last_spawn_time = pygame.time.get_ticks()
-        self.spawn_interval = 6500  # spawn cooldown (1000 = 1 second)
+        self.spawn_interval = 8500  # (Spawn CD)
+        self.boulder_speed = 12  # starting speed 
+        self.speed_increase_timer = 0
+        self.speed_increase_interval = 20000 # Increase speed every 20 seconds
 
     def spawn_boulders(self):
         current_time = pygame.time.get_ticks()
         time_elapsed = current_time - self.last_spawn_time
 
         if time_elapsed >= self.spawn_interval:
+
+            # speed increase every 20 seconds
+            self.speed_increase_timer += time_elapsed
+            if self.speed_increase_timer >= self.speed_increase_interval:
+                self.boulder_speed += 2
+                self.speed_increase_timer = 0
+
             boulder = Boulder(self.screen_width, self.screen_height)
+            boulder.speed = self.boulder_speed
             self.boulders.append(boulder)
             self.last_spawn_time = current_time
 
@@ -286,7 +248,7 @@ class ForsakenHeart(pygame.sprite.Sprite):
         self.rect.y = random.randint(50, self.screen_height - self.rect.height - 50)
 
     def update(self, current_time):
-        self.rect.x -= 5  # Movement speed
+        self.rect.x -= 10  # Movement speed
         if self.rect.right < 0:
             self.rect.x = self.screen_width
             self.rect.y = random.randint(50, self.screen_height - self.rect.height - 50)
