@@ -30,39 +30,17 @@ class GameEngine:
         # Coin spawner ()
         self.coin_spawner = CoinSpawner(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)
 
-        # Forsaken heart
-        self.forsaken_heart_spawn_time = pygame.time.get_ticks()
-        self.forsaken_heart_spawn_interval = 55000
-        self.forsaken_heart_last_spawn = 0 
-        self.forsaken_heart = None 
-        self.forsaken_heart_restores_life = True
-        self.active_forsaken_hearts = []
-        self.forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero, self.active_forsaken_hearts, self.forsaken_heart_spawn_interval)
-
         # time
         self.timer = 0
         self.previous_time = pygame.time.get_ticks()
 
         #bg 
-        self.scroll_speed = 3  #base bg speed 
-        self.scroll_speed_increase_interval = 20000 # increase after 20seconds
+        self.scroll_speed = 4  #base bg speed 
+        self.scroll_speed_increase_interval = 12500 # increase after 12.5 seconds
         self.scroll_speed_increase_timer = pygame.time.get_ticks()
-        
-    def forsaken_heart_collected(self):
-        if self.hero.health == 3:
-            self.coin_spawner.score += 200
-        else:
-            if self.forsaken_heart_restores_life:
-                if self.hero.health < 3:
-                    self.hero.health += 1
-                    # Add a new heart sprite if health is less than 3
-                    if self.hero.health <= 3:
-                        # Find the position of the most recently lost heart
-                        lost_heart = self.heart_sprites[-1]  # Index -1 corresponds to the most recently lost heart
-                        x = lost_heart.rect.x
-                        new_heart_sprite = HeartSprite(heart_frames, x, lost_heart.rect.y, scale=0.5)
-                        self.heart_sprites.insert(-1, new_heart_sprite)
 
+        # forsaken heart
+        self.forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)        
 
     def format_time(self, milliseconds):
         seconds = milliseconds // 1000
@@ -70,12 +48,11 @@ class GameEngine:
         seconds %= 60
         return f"Time: {minutes:02}:{seconds:02}"
     
-
     def create_heart_sprites(self):
         heart_sprites = []
         spacing = 10
         heart_width = heart_frames[0].get_width()
-        num_hearts = self.hero.health  # Use the 'health' attribute instead
+        num_hearts = self.hero.health  
         y = -65
 
         initial_x = self.SCREEN.get_width() - (num_hearts * (heart_width + spacing))
@@ -86,8 +63,6 @@ class GameEngine:
             heart_sprites.append(heart_sprite)
 
         return heart_sprites
-
-
 
     def update_heart_sprites(self):
         for i, heart_sprite in enumerate(self.heart_sprites):
@@ -100,7 +75,7 @@ class GameEngine:
 
         # Returns score value
     def get_current_score(self):
-        return self.coin_spawner.score
+        return self.hero.score
     
          
     def run(self):
@@ -129,8 +104,9 @@ class GameEngine:
         bg_x = 0  # Initial x-position of the background
        
         # defining coin  & boulder spawner
-        #coin_spawner = CoinSpawner(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)
         boulder_spawner = BoulderSpawner(self.SCREEN.get_width(), self.SCREEN.get_height())
+
+
 
         # game loop 
         while self.game_screen:
@@ -157,14 +133,9 @@ class GameEngine:
             # keys
             keys = pygame.key.get_pressed()
 
-            # hero jump cd duration check
-            if keys[pygame.K_SPACE]:
-                self.hero.jump(current_time)
             # hero state & jumping checks 
             is_running = True
-            is_jumping = False  
-            if keys[pygame.K_SPACE]:
-                is_jumping = True
+            is_jumping = False
             is_jumping = self.hero.is_jumping
             is_running = not is_jumping  
             is_hurt = False  
@@ -172,51 +143,43 @@ class GameEngine:
             self.hero.is_jumping = is_jumping
             self.hero.is_hurt = is_hurt
 
-            if self.forsaken_heart:
-                self.forsaken_heart.update(current_time)
-                if self.hero.rect.colliderect(self.forsaken_heart.rect):
-                    self.forsaken_heart_collected()
-                    self.forsaken_heart = None
-            else:
-                current_time = pygame.time.get_ticks()
-                if current_time - self.forsaken_heart_spawn_time >= self.forsaken_heart_spawn_interval:
-                    self.forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)
-                    self.forsaken_heart_spawn_time = current_time
-
-            if self.forsaken_heart:
-                self.SCREEN.blit(self.forsaken_heart.image, self.forsaken_heart.rect)
-
-
                 
-            # spawns the coins 
-            for x in range(3):
-                self.coin_spawner.spawn_coins()
-            
-            # coin speed
+            # spawns the coins & update
+            self.coin_spawner.spawn_coins()
             self.coin_spawner.update_coins()
 
-            # displays boulder on screen
-            boulder_spawner.spawn_boulders()
-            boulder_spawner.update()
+            for coin in self.coin_spawner.coins:
+                if not coin.collected:
+                    self.SCREEN.blit(coin.image, coin.rect)
+                    
+            # boulder collison check
+            for boulder in boulder_spawner.boulders:
+                boulder.check_collision(self.hero, self.heart_sprites)
             
+            # blit boulders on screen
             for boulder in boulder_spawner.boulders:
                 self.SCREEN.blit(boulder.image, boulder.rect)
 
-            # boulder collision
-            for i, boulder in enumerate(boulder_spawner.boulders):
-                if not boulder.collided and boulder.rect.colliderect(self.hero.rect):
-                    boulder.collided = True
-                    boulder_spawner.boulders.remove(boulder)
-                    if self.hero.health > 0:
-                        self.hero.take_damage(1) 
-                    crashSFX.play()
+            # display & update boulders
+            boulder_spawner.spawn_boulders()
+            boulder_spawner.update()
 
             # display  & update scores
-            score = self.coin_spawner.score  
+            score = self.hero.score
             # draw timer
             self.timer += elapsed_time
             drawScore(self.SCREEN, score, self.format_time(self.timer))
 
+            # Dispaly, update & draw forsaken hearts
+            if self.forsaken_heart:
+                self.forsaken_heart.update(current_time)
+                if self.hero.rect.colliderect(self.forsaken_heart.rect):
+                    self.forsaken_heart.forsaken_heart_collected()  
+                    self.forsaken_heart = None
+            if self.forsaken_heart:
+                self.SCREEN.blit(self.forsaken_heart.image, self.forsaken_heart.rect)
+
+            # open current score file & updates score inside the file
             with open("Scores/currentScore.txt", "w") as file:
                 file.write(str(score))
 
@@ -229,29 +192,19 @@ class GameEngine:
 
             # Draw the hero character
             self.SCREEN.blit(self.hero.image, self.hero.rect)
-
-            # Draw coins & collection handler
-            for coin in self.coin_spawner.coins:
-                self.SCREEN.blit(coin.image, coin.rect)
-                coin_rect = pygame.Rect(coin.rect.x, coin.rect.y, coin.image.get_width(), coin.image.get_height())
-                if coin and not coin.collected:
-                    if coin_rect.colliderect(self.hero.rect):
-                        coin.collected = True
-                        self.coin_spawner.score += coin.value
-                        coin.collect()
             
             # draws & updates hearts 
             for heart_sprite in self.heart_sprites:
                 heart_sprite.update()
                 self.SCREEN.blit(heart_sprite.image, heart_sprite.rect)
 
+                
             # go to end screen
             if self.hero.health == 0:
                 # stops music 
                 if self.game_theme_playing:
                     self.game_Theme_Music.stop()
-                    self.game_theme_playing = False
-                
+                    self.game_theme_playing = False                
                 current_score = self.get_current_score()
                 self.game_state_manager.set_state("end", self.SCREEN, self.game_state_manager, current_score=current_score)
                 existing_high_score = 0
@@ -271,15 +224,9 @@ class GameEngine:
                     current_score = score
                     return
 
-
             # event handler 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        self.hero.jump(current_time)
-            
-                    
             pygame.display.update()

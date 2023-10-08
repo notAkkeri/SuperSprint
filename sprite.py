@@ -6,8 +6,8 @@ pygame.init()
 # Global constants
 SCREEN_HEIGHT = 720
 SCREEN_WIDTH = 1280
-JUMP_STRENGTH = -12.25
-GRAVITY = 0.125
+JUMP_STRENGTH = -7
+GRAVITY = 0.075
 JUMP_COOLDOWN_DURATION = 850
 
 # sprite sheets
@@ -27,6 +27,7 @@ frame_height_run = 200
 hurt_frames = [pygame.Rect(i * frame_width_hurt, 0, frame_width_hurt, frame_height_hurt) for i in range(3)]
 jump_frames = [pygame.Rect(i * frame_width_jump, 0, frame_width_jump, frame_height_jump) for i in range(6)]
 run_frames = [pygame.Rect(i * frame_width_run, 0, frame_width_run, frame_height_run) for i in range(6)]
+
 class Hero(pygame.sprite.Sprite):
     def __init__(self, sprite_sheet, running_frames, jumping_frames, hurt_frames):
         super().__init__()
@@ -57,19 +58,22 @@ class Hero(pygame.sprite.Sprite):
         # initial image and rect
         self.image = self.sprite_sheet.subsurface(self.running_frames[0])
         self.rect = self.image.get_rect()
-        self.rect.topleft = (150, SCREEN_HEIGHT - frame_height_run - 250)
+        self.rect.topleft = (150, SCREEN_HEIGHT - frame_height_run)
+
 
         # Hero values
         self.velocity_y = 0
         self.coins_collected = 0
         self.radius = self.rect.width // 2
         self.health = 3
-        self.jumpCD = 0
+        self.score = 0 
 
         self.clock = pygame.time.Clock()
 
         # jump availability
-        self.jump_available = True
+        self.max_jumps = 5
+        self.jump_count = 0
+        self.can_double_jump = True
 
         # Create surfaces for each frame
         self.running_surfaces = [self.sprite_sheet.subsurface(frame) for frame in self.running_frames]
@@ -91,17 +95,22 @@ class Hero(pygame.sprite.Sprite):
             self.health = 0
             self.is_hurt = True 
             self.hurt_current_frame = 0  
+
     def jump(self, current_time):
-        if not self.is_jumping and self.jump_available:  
+        if self.jump_count < self.max_jumps or (self.jump_count == 1 and self.can_double_jump):
             self.velocity_y = JUMP_STRENGTH
             self.is_jumping = True
-            self.is_running = False 
-            self.jump_available = False  
-            self.jump_start_time = pygame.time.get_ticks() 
+            self.is_running = False
+            self.jump_count += 1
+            self.can_double_jump = False  
             jumpSFX.play()
 
     def update(self, current_time):
         elapsed_time = self.clock.tick(240) / 1000.0  
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            self.jump(current_time)
 
         if self.is_hurt:
             self.current_frame += self.hurt_animation_speed * elapsed_time
@@ -128,24 +137,17 @@ class Hero(pygame.sprite.Sprite):
             self.image = self.running_surfaces[0]
             self.mask = self.running_masks[0]
 
-        # cd check
-        if not self.jump_available:
-            if current_time - self.jump_start_time >= JUMP_COOLDOWN_DURATION:
-                self.jump_available = True        
-
-        # game phys
+        # gravity 
         self.velocity_y += GRAVITY
         self.rect.y += self.velocity_y
 
-        #  stay on floor lil bro
+        # stay on da floor lil bro
         if self.rect.y >= SCREEN_HEIGHT - self.rect.height:
             self.rect.y = SCREEN_HEIGHT - self.rect.height
             self.is_jumping = False
             self.velocity_y = 0
-
-        # jump cd
-        if current_time - self.jumpCD >= JUMP_COOLDOWN_DURATION:
-            self.is_jumping = False
+            self.jump_count = 0
+            self.can_double_jump = True
 
     # Collect coin function
     def collect_coin(self, value):
@@ -192,4 +194,6 @@ class HeartSprite(pygame.sprite.Sprite):
                     self.forward = True
             self.image = self.frames[self.current_frame]
 
+
+# init hero sprite (alongside animation & mask)
 hero = Hero(spriteRun, run_frames, jump_frames, hurt_frames)

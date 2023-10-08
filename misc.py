@@ -24,14 +24,14 @@ def menu_Theme():
 
     if menu_theme_sound is None:
         menu_theme_sound = pygame.mixer.Sound("assets/sfx/menu.mp3")
-        menu_theme_sound.set_volume(0.1)
+        menu_theme_sound.set_volume(0.3)
         menu_theme_sound.play()
     
     return menu_theme_sound
 # Game Theme
 def gameTheme():
     game_theme_sound = pygame.mixer.Sound("assets/sfx/theme.mp3")
-    game_theme_sound.set_volume(0.05)
+    game_theme_sound.set_volume(0.01)
     game_theme_sound.play()
     return game_theme_sound
 
