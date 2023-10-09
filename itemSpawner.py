@@ -1,7 +1,7 @@
 import random
 import pygame
 from sprite import *
-from misc import coinSFX, crashSFX, get_forsaken_icon
+from misc import coinSFX, crashSFX, get_forsaken_icon, heal1SFX, heal2SFX
 from math import radians
 
 # Point value for coins 
@@ -80,7 +80,7 @@ class CoinSpawner:
         self.coin_pool = CoinPool(screen_width, screen_height)
         self.coin_group = pygame.sprite.Group()
         self.last_spawn_time = 0
-        self.spawn_interval = 2250 
+        self.spawn_interval = 1750 
         self.spawn_pattern = 0
 
         # Preload 20 coins w/ coin type
@@ -225,7 +225,7 @@ class BoulderSpawner(pygame.sprite.Sprite):
         self.spawn_interval = 8500  # (Spawn CD)
         self.boulder_speed = 12  # starting speed 
         self.speed_increase_timer = 0
-        self.speed_increase_interval = 20000 # Increase speed every 25 seconds
+        self.speed_increase_interval = 20000 # Increase speed every 20 seconds
 
     def spawn_boulders(self):
         current_time = pygame.time.get_ticks()
@@ -255,62 +255,55 @@ class BoulderSpawner(pygame.sprite.Sprite):
             SCREEN.blit(boulder.image, boulder.rect)
 
 # Forsaken  Heart 
+
 class ForsakenHeart(pygame.sprite.Sprite):
-    def __init__(self, screen_width, screen_height, hero, active_forsaken_hearts=None, spawn_interval=None):
+    def __init__(self, screen_width, screen_height, hero, heart_sprites):
         super().__init__()
         self.image = get_forsaken_icon()
         self.rect = self.image.get_rect()
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.spawn_timer = pygame.time.get_ticks()
-        self.collected = False
-        self.value = 200
         self.hero = hero
-        self.active_forsaken_hearts = active_forsaken_hearts
-        self.spawn_interval = spawn_interval  
-        self.rect.x = self.screen_width
-        self.rect.y = random.randint(50, self.screen_height - self.rect.height - 50)
+        self.heart_sprites = heart_sprites 
+        self.collected = False  
+        self.spawn_interval = 35000  # Spawn timer
+        self.spawn_timer = pygame.time.get_ticks()
+        self.forsaken_heart_restores_life = True
+        self.heal1_sound = heal1SFX
+        self.heal2_sound = heal2SFX
+        self.mask = pygame.mask.from_surface(self.image)
+        self.spawn_new_forsaken_heart()
 
     def update(self, current_time):
         self.rect.x -= 10  # Movement speed
         if self.rect.right < 0:
-            self.rect.x = self.screen_width
-            self.rect.y = random.randint(50, self.screen_height - self.rect.height - 50)
+            self.spawn_new_forsaken_heart()
 
-    def check_collision(self, hero):
-        if not self.collected and pygame.sprite.collide_rect(self, hero):
-            self.collect()
-
-    def collect(self):
-        if not self.collected:
-            self.collected = True
-            self.hero.score += self.value  
-            if self.hero.health < 3:
-                self.hero.health += 1
-                if self.hero.health <= 3:
-                    lost_heart = self.hero.heart_sprites[-1]
-                    x = lost_heart.rect.x
-                    new_heart_sprite = HeartSprite(heart_frames, x, lost_heart.rect.y, scale=0.5)
-                    self.hero.heart_sprites.insert(-1, new_heart_sprite)
-
+    def spawn_new_forsaken_heart(self):
+        self.rect.x = self.screen_width
+        self.rect.y = random.randint(50, self.screen_height - self.rect.height - 50)
+        self.collected = False  
     def forsaken_heart_collected(self):
-        if self.hero.health == 3:
-            self.hero.score += 200
-        else:
-            if self.forsaken_heart_restores_life:
-                if self.hero.health < 3:
-                    self.hero.health += 1
-                    # Recovers 1 health if health is less than 3
-                    if self.hero.health <= 3:
-                        lost_heart = self.hero.heart_sprites[-1] 
-                        x = lost_heart.rect.x
-                        new_heart_sprite = HeartSprite(heart_frames, x, lost_heart.rect.y, scale=0.5)
-                        self.hero.heart_sprites.insert(-1, new_heart_sprite)
+        if not self.collected:
+            if self.hero.health == 3:
+                self.hero.score += 200
+                self.heal1_sound.stop()
+                self.heal1_sound.play()
+                print("Forsaken Heart gave points!")
+            else:
+                if self.forsaken_heart_restores_life:
+                    if self.hero.health < 3:
+                        self.hero.health += 1
+                        self.heal2_sound.stop()
+                        self.heal2_sound.play()
 
+                        if len(self.heart_sprites) < 3:
+                            x = 900 - (len(self.heart_sprites) * (heart_frames[0].get_width() + 2))
+                            y = -65
+                            heart_sprite = HeartSprite(heart_frames, x, y, scale=0.5)
+                            self.heart_sprites.append(heart_sprite)
 
-    def spawn_forsaken_heart(self):
-        y = self.screen_height - self.rect.height
-        x = random.randint(0, self.screen_width - self.rect.width)
-        self.rect.topleft = (x, y)
-        print(f"ForsakenHeart spawned at ({x}, {y})")
+            self.collected = True
+            self.spawn_new_forsaken_heart()
+
 

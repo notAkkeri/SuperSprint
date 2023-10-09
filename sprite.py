@@ -67,13 +67,15 @@ class Hero(pygame.sprite.Sprite):
         self.radius = self.rect.width // 2
         self.health = 3
         self.score = 0 
+        self.heart_sprites = [] 
 
         self.clock = pygame.time.Clock()
 
         # jump availability
-        self.max_jumps = 5
+        self.max_jumps = 1  # max jumps while airborn 
         self.jump_count = 0
         self.can_double_jump = True
+
 
         # Create surfaces for each frame
         self.running_surfaces = [self.sprite_sheet.subsurface(frame) for frame in self.running_frames]
@@ -97,20 +99,24 @@ class Hero(pygame.sprite.Sprite):
             self.hurt_current_frame = 0  
 
     def jump(self, current_time):
-        if self.jump_count < self.max_jumps or (self.jump_count == 1 and self.can_double_jump):
+        if self.jump_count < self.max_jumps:
             self.velocity_y = JUMP_STRENGTH
             self.is_jumping = True
             self.is_running = False
             self.jump_count += 1
-            self.can_double_jump = False  
             jumpSFX.play()
+        elif self.jump_count == self.max_jumps and self.can_double_jump:
+            self.velocity_y = JUMP_STRENGTH
+            self.is_jumping = True
+            self.is_running = False
+            self.jump_count += 1
+            self.can_double_jump = False
+            jumpSFX.play()
+
+
 
     def update(self, current_time):
         elapsed_time = self.clock.tick(240) / 1000.0  
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            self.jump(current_time)
 
         if self.is_hurt:
             self.current_frame += self.hurt_animation_speed * elapsed_time

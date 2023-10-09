@@ -6,16 +6,20 @@ pygame.mixer.init()
 
 # SFX & Audio # 
 coinSFX = pygame.mixer.Sound("assets/sfx/collect.mp3")
-coinSFX.set_volume(0.25)
+coinSFX.set_volume(0.3)
 jumpSFX = pygame.mixer.Sound("assets/sfx/jump1.mp3")
-jumpSFX.set_volume(0.25)
+jumpSFX.set_volume(0.05)
 crashSFX = pygame.mixer.Sound("assets/sfx/crash.mp3")
-jumpSFX.set_volume(0.25)
+jumpSFX.set_volume(0.3)
+heal1SFX = pygame.mixer.Sound("assets/sfx/heal1.mp3")
+heal1SFX.set_volume(0.5)
+heal2SFX = pygame.mixer.Sound("assets/sfx/heal2.mp3")
+heal2SFX.set_volume(0.5)
 
 # Button/sound  
 sound_path = "assets/sfx/click1.mp3"
 click_sound = pygame.mixer.Sound(sound_path)
-click_sound.set_volume(0.25)
+click_sound.set_volume(0.4)
 
 # Menu Theme
 menu_theme_sound = None  
@@ -30,15 +34,15 @@ def menu_Theme():
     return menu_theme_sound
 # Game Theme
 def gameTheme():
-    game_theme_sound = pygame.mixer.Sound("assets/sfx/theme.mp3")
-    game_theme_sound.set_volume(0.01)
+    game_theme_sound =  pygame.mixer.Sound("assets/sfx/theme.mp3")
+    game_theme_sound.set_volume(0.65)
     game_theme_sound.play()
     return game_theme_sound
 
 # Gameover theme
 def gameOverTheme():
     gameOver = pygame.mixer.Sound("assets/sfx/gameOverTheme.mp3")
-    gameOver.set_volume(0.1)
+    gameOver.set_volume(0.2)
     gameOver.play()
     return gameOver
 
@@ -66,8 +70,6 @@ def get_font4(size):
 
 
 # Icons
-#def get_heart_icon():
- #   return pygame.image.load("assets/heartIcon.png")
 def get_boulder_icon():
     return pygame.image.load("assets/boulder.png")
 def get_forsaken_icon():
@@ -82,8 +84,6 @@ def backgroundScroll(bg_image, bg_x, screen, elapsed_time, scroll_speed):
     screen.blit(bg_image, (bg_x, 0))
     screen.blit(bg_image, (bg_x + bg_image.get_width(), 0))
     return bg_x
-
-
 
 # ON SCREEN TEXT #
 

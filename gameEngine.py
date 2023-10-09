@@ -40,7 +40,11 @@ class GameEngine:
         self.scroll_speed_increase_timer = pygame.time.get_ticks()
 
         # forsaken heart
-        self.forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero)        
+        self.forsaken_hearts = []
+        self.spawn_timer = pygame.time.get_ticks()
+        self.forsaken_heart_spawn_interval = 35000 # spawn timer
+        
+
 
     def format_time(self, milliseconds):
         seconds = milliseconds // 1000
@@ -76,7 +80,6 @@ class GameEngine:
         # Returns score value
     def get_current_score(self):
         return self.hero.score
-    
          
     def run(self):
         #print("entering game")
@@ -106,8 +109,6 @@ class GameEngine:
         # defining coin  & boulder spawner
         boulder_spawner = BoulderSpawner(self.SCREEN.get_width(), self.SCREEN.get_height())
 
-
-
         # game loop 
         while self.game_screen:
             self.SCREEN.fill((0, 0, 0))
@@ -133,7 +134,7 @@ class GameEngine:
             # keys
             keys = pygame.key.get_pressed()
 
-            # hero state & jumping checks 
+            # hero state & jumping checks (anis)
             is_running = True
             is_jumping = False
             is_jumping = self.hero.is_jumping
@@ -143,6 +144,9 @@ class GameEngine:
             self.hero.is_jumping = is_jumping
             self.hero.is_hurt = is_hurt
 
+            # jump check 
+            is_jumping = self.hero.is_jumping
+            is_running = not is_jumping
                 
             # spawns the coins & update
             self.coin_spawner.spawn_coins()
@@ -170,14 +174,19 @@ class GameEngine:
             self.timer += elapsed_time
             drawScore(self.SCREEN, score, self.format_time(self.timer))
 
-            # Dispaly, update & draw forsaken hearts
-            if self.forsaken_heart:
-                self.forsaken_heart.update(current_time)
-                if self.hero.rect.colliderect(self.forsaken_heart.rect):
-                    self.forsaken_heart.forsaken_heart_collected()  
-                    self.forsaken_heart = None
-            if self.forsaken_heart:
-                self.SCREEN.blit(self.forsaken_heart.image, self.forsaken_heart.rect)
+            # fh list thing
+            if current_time - self.spawn_timer >= self.forsaken_heart_spawn_interval:
+                self.spawn_timer = current_time
+                forsaken_heart = ForsakenHeart(self.SCREEN.get_width(), self.SCREEN.get_height(), self.hero, self.heart_sprites)
+                self.forsaken_hearts.append(forsaken_heart)
+
+            # Update and draw Forsaken Hearts
+            for forsaken_heart in self.forsaken_hearts:
+                forsaken_heart.update(current_time)
+                if self.hero.rect.colliderect(forsaken_heart.rect):
+                    forsaken_heart.forsaken_heart_collected()
+                    self.forsaken_hearts.remove(forsaken_heart)
+                self.SCREEN.blit(forsaken_heart.image, forsaken_heart.rect)
 
             # open current score file & updates score inside the file
             with open("Scores/currentScore.txt", "w") as file:
@@ -229,4 +238,8 @@ class GameEngine:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.hero.jump(current_time)
+
             pygame.display.update()
