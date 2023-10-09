@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import sys
 from button import Button
-from misc import get_font, title, click_sound, menu_Theme
+from misc import get_font, title, playClickSound
 from gameState import GameStateManager
 
 pygame.init()
@@ -44,7 +44,7 @@ class MainMenu:
                 font=data["font"],
                 base_color="#f1e8ef",
                 hovering_color="#1b1018",
-                click_sound=click_sound,
+                click_sound=playClickSound,
             )
             buttons.append(button)
         return buttons
@@ -74,8 +74,7 @@ class MainMenu:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     for button in buttons:
                         if button.checkForInput(MENU_MOUSE_POS):
-                            click_sound.play()
-
+                            playClickSound()
                             if button.text_input == "PLAY":
                                 self.game_state_manager.set_state("game", self.SCREEN, game_state_manager=self.game_state_manager)
                                 return

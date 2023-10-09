@@ -1,7 +1,7 @@
 import random
 import pygame
 from sprite import *
-from misc import coinSFX, crashSFX, get_forsaken_icon, heal1SFX, heal2SFX
+from misc import get_forsaken_icon, playCoinSFX, playCrashSFX, playHeal1SFX, playHeal2SFX
 from math import radians
 
 # Point value for coins 
@@ -41,7 +41,7 @@ class Coin(pygame.sprite.Sprite):
         self.coin_type = coin_type  
 
     def collect(self):
-        coinSFX.play()
+        playCoinSFX()
         self.collected = True
         self.hero.score += coin_values[self.coin_type]
 
@@ -203,7 +203,7 @@ class Boulder(pygame.sprite.Sprite):
     def check_collision(self, hero, hearts):
         if not self.collided and pygame.sprite.collide_mask(self, hero):
             self.collided = True
-            crashSFX.play()
+            playCrashSFX()
             if pygame.sprite.collide_mask(self, hero):
                 self.collided = True
                 if hero.health > 0:
@@ -269,8 +269,8 @@ class ForsakenHeart(pygame.sprite.Sprite):
         self.spawn_interval = 35000  # Spawn timer
         self.spawn_timer = pygame.time.get_ticks()
         self.forsaken_heart_restores_life = True
-        self.heal1_sound = heal1SFX
-        self.heal2_sound = heal2SFX
+        self.heal1_sound = playHeal1SFX
+        self.heal2_sound = playHeal2SFX
         self.mask = pygame.mask.from_surface(self.image)
         self.spawn_new_forsaken_heart()
 
@@ -287,16 +287,13 @@ class ForsakenHeart(pygame.sprite.Sprite):
         if not self.collected:
             if self.hero.health == 3:
                 self.hero.score += 200
-                self.heal1_sound.stop()
-                self.heal1_sound.play()
+                self.heal1_sound().play() 
                 print("Forsaken Heart gave points!")
             else:
                 if self.forsaken_heart_restores_life:
                     if self.hero.health < 3:
                         self.hero.health += 1
-                        self.heal2_sound.stop()
-                        self.heal2_sound.play()
-
+                        self.heal2_sound().play() 
                         if len(self.heart_sprites) < 3:
                             x = 900 - (len(self.heart_sprites) * (heart_frames[0].get_width() + 2))
                             y = -65
@@ -305,5 +302,4 @@ class ForsakenHeart(pygame.sprite.Sprite):
 
             self.collected = True
             self.spawn_new_forsaken_heart()
-
 

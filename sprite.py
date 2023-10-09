@@ -1,14 +1,13 @@
 import pygame
 from pygame.locals import *
-from misc import jumpSFX 
+from misc import playJumpSFX 
 pygame.init()
 
 # Global constants
 SCREEN_HEIGHT = 720
 SCREEN_WIDTH = 1280
-JUMP_STRENGTH = -7
+JUMP_STRENGTH = -7.5
 GRAVITY = 0.075
-JUMP_COOLDOWN_DURATION = 850
 
 # sprite sheets
 spriteHurt = pygame.image.load("assets/spriteHurt.png")
@@ -104,14 +103,14 @@ class Hero(pygame.sprite.Sprite):
             self.is_jumping = True
             self.is_running = False
             self.jump_count += 1
-            jumpSFX.play()
+            playJumpSFX()
         elif self.jump_count == self.max_jumps and self.can_double_jump:
             self.velocity_y = JUMP_STRENGTH
             self.is_jumping = True
             self.is_running = False
             self.jump_count += 1
             self.can_double_jump = False
-            jumpSFX.play()
+            playJumpSFX()
 
 
 

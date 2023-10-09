@@ -4,46 +4,88 @@ from pygame import mixer
 pygame.init()
 pygame.mixer.init()
 
-# SFX & Audio # 
+# Audio Channels
+sfxChannel0 = pygame.mixer.Channel(0) # multi use channel
+sfxChannel1 = pygame.mixer.Channel(1) # unique channel
+sfxChannel2 = pygame.mixer.Channel(2) # unique channel
+sfxChannel3 = pygame.mixer.Channel(3) # unique channel
+themesChannel1 = pygame.mixer.Channel(4) 
+themesChannel2 = pygame.mixer.Channel(5)
+themesChannel3 = pygame.mixer.Channel(6) 
+# SFX #
+
+# Sound Effects
+
+ # Coin Collect
+# Coin Collect
 coinSFX = pygame.mixer.Sound("assets/sfx/collect.mp3")
-coinSFX.set_volume(0.3)
+coinSFX.set_volume(0.4)
+def playCoinSFX():
+    pygame.mixer.Channel(1).stop()
+    pygame.mixer.Channel(1).play(coinSFX)
+    return coinSFX
+
+# Jumping
 jumpSFX = pygame.mixer.Sound("assets/sfx/jump1.mp3")
-jumpSFX.set_volume(0.05)
+jumpSFX.set_volume(0.25)
+def playJumpSFX():
+    pygame.mixer.Channel(2).stop()
+    pygame.mixer.Channel(2).play(jumpSFX)
+    return jumpSFX
+
+# Boulder collide
 crashSFX = pygame.mixer.Sound("assets/sfx/crash.mp3")
-jumpSFX.set_volume(0.3)
+crashSFX.set_volume(0.1)
+def playCrashSFX():
+    pygame.mixer.Channel(3).stop()
+    pygame.mixer.Channel(3).play(crashSFX)
+    return crashSFX
+
+# Forsaken heart (when max lives)
 heal1SFX = pygame.mixer.Sound("assets/sfx/heal1.mp3")
 heal1SFX.set_volume(0.5)
+def playHeal1SFX():
+    pygame.mixer.Channel(0).stop()
+    pygame.mixer.Channel(0).play(heal1SFX)
+    return heal1SFX
+
+# Forsaken heart (when health restored)
 heal2SFX = pygame.mixer.Sound("assets/sfx/heal2.mp3")
 heal2SFX.set_volume(0.5)
+def playHeal2SFX():
+    pygame.mixer.Channel(0).stop()
+    pygame.mixer.Channel(0).play(heal2SFX)
+    return heal2SFX
 
-# Button/sound  
-sound_path = "assets/sfx/click1.mp3"
-click_sound = pygame.mixer.Sound(sound_path)
-click_sound.set_volume(0.4)
+# Buttons SFX
+click_sound = pygame.mixer.Sound("assets/sfx/click1.mp3")
+click_sound.set_volume(0.3)
+def playClickSound():
+    pygame.mixer.Channel(0).stop()
+    pygame.mixer.Channel(0).play(click_sound)
+    return click_sound
 
-# Menu Theme
-menu_theme_sound = None  
+# Themes #
+
+# Menu theme
+menu_theme_sound = pygame.mixer.Sound("assets/sfx/menu.mp3")
+menu_theme_sound.set_volume(0.4)
 def menu_Theme():
-    global menu_theme_sound
-
-    if menu_theme_sound is None:
-        menu_theme_sound = pygame.mixer.Sound("assets/sfx/menu.mp3")
-        menu_theme_sound.set_volume(0.3)
-        menu_theme_sound.play()
-    
+    themesChannel1.play(menu_theme_sound)
     return menu_theme_sound
+
 # Game Theme
+game_theme_sound = pygame.mixer.Sound("assets/sfx/theme.mp3")
+game_theme_sound.set_volume(0.4)
 def gameTheme():
-    game_theme_sound =  pygame.mixer.Sound("assets/sfx/theme.mp3")
-    game_theme_sound.set_volume(0.65)
-    game_theme_sound.play()
+    themesChannel2.play(game_theme_sound)
     return game_theme_sound
 
 # Gameover theme
+gameOver = pygame.mixer.Sound("assets/sfx/gameOverTheme.mp3")
+gameOver.set_volume(0.25)
 def gameOverTheme():
-    gameOver = pygame.mixer.Sound("assets/sfx/gameOverTheme.mp3")
-    gameOver.set_volume(0.2)
-    gameOver.play()
+    themesChannel3.play(gameOver)
     return gameOver
 
 

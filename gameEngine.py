@@ -36,7 +36,7 @@ class GameEngine:
 
         #bg 
         self.scroll_speed = 4  #base bg speed 
-        self.scroll_speed_increase_interval = 12500 # increase after 12.5 seconds
+        self.scroll_speed_increase_interval = 550 # increase after 1 seconds
         self.scroll_speed_increase_timer = pygame.time.get_ticks()
 
         # forsaken heart
@@ -88,11 +88,6 @@ class GameEngine:
             self.menu_theme_playing = False
             print("Menu theme stopped!")
 
-        # Check if the game theme is not playing and start it
-        if not self.game_theme_playing:
-            self.game_Theme_Music.play()
-            self.game_theme_playing = True
-            print("Game theme playing")
 
         # scores 
         score = 0
@@ -128,7 +123,7 @@ class GameEngine:
             self.hero.update(current_time)
 
             if elapsed_time >= self.scroll_speed_increase_interval:
-                self.scroll_speed += 2  # increase the background speed by 2
+                self.scroll_speed += 4  # increase the background speed by 3
                 self.scroll_speed_increase_timer = current_time  # reset timer
 
             # keys
@@ -207,13 +202,8 @@ class GameEngine:
                 heart_sprite.update()
                 self.SCREEN.blit(heart_sprite.image, heart_sprite.rect)
 
-                
             # go to end screen
-            if self.hero.health == 0:
-                # stops music 
-                if self.game_theme_playing:
-                    self.game_Theme_Music.stop()
-                    self.game_theme_playing = False                
+            if self.hero.health == 0:       
                 current_score = self.get_current_score()
                 self.game_state_manager.set_state("end", self.SCREEN, self.game_state_manager, current_score=current_score)
                 existing_high_score = 0
