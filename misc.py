@@ -16,7 +16,6 @@ themesChannel3 = pygame.mixer.Channel(6)
 
 # Sound Effects
 
- # Coin Collect
 # Coin Collect
 coinSFX = pygame.mixer.Sound("assets/sfx/collect.mp3")
 coinSFX.set_volume(0.4)

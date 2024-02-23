@@ -36,7 +36,7 @@ class GameEngine:
 
         #bg 
         self.scroll_speed = 4  #base bg speed 
-        self.scroll_speed_increase_interval = 550 # increase after 1 seconds
+        self.scroll_speed_increase_interval = 2500 # increase after 2.5 seconds
         self.scroll_speed_increase_timer = pygame.time.get_ticks()
 
         # forsaken heart

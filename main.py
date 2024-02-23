@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import sys
 from button import Button
-from misc import get_font, title, playClickSound
+from misc import title, playClickSound
 from gameState import GameStateManager
 
 pygame.init()
@@ -23,27 +23,28 @@ class MainMenu:
     def __init__(self, SCREEN, game_state_manager):
         self.SCREEN = SCREEN
         self.game_state_manager = game_state_manager
-        self.font = pygame.font.Font("assets/font.ttf", 75)
+        self.font = pygame.font.Font("assets/font.ttf", 55)
         self.background_image = pygame.image.load("assets/background.png")
 
     def create_buttons(self):
         #positions of each button placement
         button_data = [
-            {"pos": (640, 300), "text": "PLAY", "font": self.font},
-            {"pos": (640, 425), "text": "HELP", "font": self.font},
-            {"pos": (640, 550), "text": "QUIT", "font": self.font},
-            {"pos": (1180, 640), "text": "CREDITS", "font": pygame.font.Font("assets/font.ttf", 25)},
+            {"pos": (640, 250), "text": "PLAY", "font": self.font},
+            {"pos": (640, 350), "text": "HELP", "font": self.font},
+            {"pos": (640, 450), "text": "SHOP", "font": self.font},
+             {"pos": (640, 550), "text": "CREDITS", "font": self.font},
+            {"pos": (640, 650), "text": "QUIT", "font": self.font},
         ]
 
         buttons = []
         for data in button_data:
             button = Button(
-                image=pygame.image.load("assets/rect.png" if data["text"] != "CREDITS" else "assets/rect1.png"),
+                image=pygame.image.load("assets/rect.png"),
                 pos=data["pos"],
                 text_input=data["text"],
                 font=data["font"],
-                base_color="#f1e8ef",
-                hovering_color="#1b1018",
+                base_color="#511c57",
+                hovering_color="#FBF9FB",
                 click_sound=playClickSound,
             )
             buttons.append(button)
@@ -81,12 +82,17 @@ class MainMenu:
                             elif button.text_input == "HELP":
                                 self.game_state_manager.set_state("help", self.SCREEN, game_state_manager=self.game_state_manager)
                                 return
-                            elif button.text_input == "QUIT":
-                                pygame.quit()
-                                sys.exit()
                             elif button.text_input == "CREDITS":
                                 self.game_state_manager.set_state("credits", self.SCREEN, game_state_manager=self.game_state_manager)
                                 return
+                            
+                            elif button.text_input == "SHOP":
+                                self.game_state_manager.set_state("shop", self.SCREEN, game_state_manager=self.game_state_manager)
+                                return
+                            
+                            elif button.text_input == "QUIT":
+                                pygame.quit()
+                                sys.exit()
 
             pygame.display.update()
 

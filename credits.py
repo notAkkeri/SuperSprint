@@ -9,8 +9,8 @@ class Credits:
         self.game_state_manager = game_state_manager
         self.credits_screen = True
         self.menu_Theme_music = menu_Theme_music
-        self.back_button = Button(image=pygame.image.load("assets/rect1.png"), pos=(80, 640),
-                                text_input="BACK", font=get_font(30), base_color="#f1e8ef", hovering_color="#1b1018",
+        self.back_button = Button(image=pygame.image.load("assets/rect1.png"), pos=(120, 60),
+                                text_input="BACK", font=get_font(30), base_color="#f1e8ef", hovering_color="#FBF9FB",
                                 click_sound=playClickSound())
 
     def run(self):

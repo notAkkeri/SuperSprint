@@ -2,6 +2,8 @@ from gameEngine import GameEngine
 from credits import Credits
 from help import HelpScreen
 from endScreen import EndScreen
+from shop import ShopScreen
+
 import pygame 
 
 class GameStateManager:
@@ -42,10 +44,17 @@ class GameStateManager:
             if pygame.mixer.music.get_busy():
                 pygame.mixer.music.stop()
             self.current_state = Credits(SCREEN, game_state_manager, menu_Theme_music=self.menu_Theme_music, *args)
+
         elif state_name == "help":
             if pygame.mixer.music.get_busy():
                 pygame.mixer.music.stop()
             self.current_state = HelpScreen(SCREEN, game_state_manager, menu_Theme_music=self.menu_Theme_music, *args)
+
+        elif state_name == "shop":
+            if pygame.mixer.music.get_busy():
+                pygame.mixer.music.stop()
+            self.current_state = ShopScreen(SCREEN, game_state_manager, menu_Theme_music=self.menu_Theme_music, *args)
+
         elif state_name == "end":
             if self.game_Theme_music is not None:
                 self.game_Theme_music.stop()  
@@ -75,6 +84,11 @@ def displayHelp(SCREEN, next_state_callback=None):
     help_screen = HelpScreen(SCREEN, next_state_callback)
     help_screen.run()
 
+def displayShop(SCREEN, game_state_manager=None):
+    shop_screen = ShopScreen(SCREEN, game_state_manager)
+    shop_screen.run()
+
+# start endScreen
 def displayEnd(SCREEN, game_state_manager):
     end_screen = EndScreen(SCREEN, game_state_manager)
     end_screen.run()

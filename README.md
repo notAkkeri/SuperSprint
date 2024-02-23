@@ -4,7 +4,7 @@ Simple game created using the pyGame library & collaborative effort of notAkkeri
 
 ## Special Thanks
 
-We extend our gratitude to:
+Additional credit too:
 - Judg3ment
 - The open-source project community
 
@@ -13,7 +13,7 @@ We extend our gratitude to:
 **Objective:** Beat your personal best score by surviving, avoiding obstacles, and collecting coins.
 
 1. **Controls:**
-   - Jump using the Spacebar.
+   - Jump using the Spacebar or up arrow key.
    - You can perform up to two jumps while airborne.
    
 2. **Gameplay:**
@@ -26,7 +26,8 @@ We extend our gratitude to:
 We have a few plans for SuperSprint's future, including:
 - New stages
 - Additional obstacles
-- Exciting features
+- New shop & items!
+- new powerups 
 
 
 ## Disclaimer
